@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voyara.Domain.Entities.Culture_Rules;
 using Voyara.Domain.Entities.Transportation;
 
 namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
@@ -35,6 +36,14 @@ namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
 
         /// <summary>Join table linking destinations to the city transport entries that reach them.</summary>
         public DbSet<DestinationTransport> DestinationTransports => Set<DestinationTransport>();
+
+        // ---- Culture & Rules ----
+
+        /// <summary>Cultural, legal and behavioral rules scoped to a country, city or destination.</summary>
+        public DbSet<LocalRule> LocalRules => Set<LocalRule>();
+
+        /// <summary>Localized texts of the local rules, one per language.</summary>
+        public DbSet<LocalRuleTranslation> LocalRuleTranslations => Set<LocalRuleTranslation>();
 
         /// <summary>
         /// Applies every <see cref="IEntityTypeConfiguration{TEntity}"/> found in this assembly.
