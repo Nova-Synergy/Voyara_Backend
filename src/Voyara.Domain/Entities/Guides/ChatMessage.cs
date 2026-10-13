@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voyara.SharedKernel.Entities;
 
 namespace Voyara.Domain.Entities.Guides
 {
     /// <summary>
     /// Represents a message sent within a guide conversation thread.
     /// </summary>
-    public sealed class ChatMessage
+    public sealed class ChatMessage : AuditableEntity
     {
-        /// <summary>
-        /// Gets the unique identifier of the message.
-        /// </summary>
-        public long Id { get; private set; }
-
         /// <summary>
         /// Gets the identifier of the conversation thread containing this message.
         /// </summary>
