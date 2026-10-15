@@ -1,6 +1,7 @@
 ﻿using System;
 using Voyara.Domain.Enums;
 using Voyara.SharedKernel.Entities;
+using System.Collections.Generic;
 
 namespace Voyara.Domain.Entities.Guides
 {
@@ -50,8 +51,6 @@ namespace Voyara.Domain.Entities.Guides
         /// Gets the identifier of the city associated with the guide.
         /// </summary>
         public int CityId { get; private set; }
-        
-
 
         /// <summary>
         /// Gets the languages spoken by the guide.
@@ -87,15 +86,5 @@ namespace Voyara.Domain.Entities.Guides
         /// Gets the requests associated with this guide profile.
         /// </summary>
         public ICollection<GuideRequest> GuideRequests { get; private set; } = new List<GuideRequest>();
-
-        /// <summary>
-        /// Gets the city associated with this guide profile.
-        /// </summary>
-        public City? City { get; private set; }
-
-        /// <summary>
-        /// Gets the User associated with this guide profile 
-        /// </summary>
-        public User? User { get; private set; }
     }
 }
