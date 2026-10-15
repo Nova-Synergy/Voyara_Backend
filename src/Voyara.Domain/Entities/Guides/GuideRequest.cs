@@ -69,11 +69,6 @@ namespace Voyara.Domain.Entities.Guides
         public Guid GuideProfileId { get; private set; }
 
         /// <summary>
-        /// Gets the identifier of the requested destination.
-        /// </summary>
-        public Guid DestinationId { get; private set; }
-
-        /// <summary>
         /// Gets the guide profile associated with this request.
         /// </summary>
         public GuideProfile? GuideProfile { get; private set; }
@@ -84,10 +79,10 @@ namespace Voyara.Domain.Entities.Guides
         public GuideSession? GuideSession { get; private set; }
 
         /// <summary>
-        /// Gets the optional chat thread associated with this request.
+        /// Gets the chat threads associated with this request.
         /// </summary>
-        public ChatThread? ChatThread { get; private set; }
-
+        public ICollection<GuideChatThread> GuideChatThreads { get; private set; } = new List<GuideChatThread>();
+        
         /// <summary>
         /// Gets the optional review associated with this request.
         /// </summary>
@@ -99,8 +94,8 @@ namespace Voyara.Domain.Entities.Guides
         public User? User { get; private set; }
 
         /// <summary>
-        /// Gets the destination associated with this request.
+        /// Gets the destinations associated with this request.
         /// </summary>
-        public Destination? Destination { get; private set; }
+        public ICollection<Destination> Destinations { get; private set; } = new List<Destination>();
     }
 }
