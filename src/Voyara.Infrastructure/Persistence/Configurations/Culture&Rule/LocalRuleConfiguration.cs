@@ -9,19 +9,20 @@ using Voyara.Domain.Entities.Culture_Rules;
 
 namespace Voyara.Infrastructure.Persistence.Configurations.Culture_Rule
 {
+
     /// <summary>
     /// EF Core Fluent API mapping for <see cref="LocalRule"/>.
     /// </summary>
     /// <remarks>
-    /// <see cref="LocalRule.ScopeId"/> references a Country, City or Destination <c>«ref»</c> from another module,
-    /// so it is mapped as a plain indexed column without a foreign key constraint.
+    /// <see cref="LocalRule.ScopeId"/> points to a country, city or destination depending on
+    /// <see cref="LocalRule.Scope"/>, so it is mapped as a plain indexed column without a foreign key constraint.
     /// </remarks>
-    public class LocalRuleConfiguration : IEntityTypeConfiguration<LocalRule>
+    public sealed class LocalRuleConfiguration : IEntityTypeConfiguration<LocalRule>
     {
         /// <inheritdoc />
         public void Configure(EntityTypeBuilder<LocalRule> builder)
         {
-            builder.ToTable("LocalRules");
+            builder.ToTable("local_rules");
 
             builder.HasKey(x => x.Id);
 
@@ -45,7 +46,6 @@ namespace Voyara.Infrastructure.Persistence.Configurations.Culture_Rule
             builder.HasIndex(x => new { x.Scope, x.ScopeId });
 
             // Composition: LocalRule 1 --- 1..* LocalRuleTranslation.
-            // Deleting a rule deletes its translations.
             builder.HasMany(x => x.Translations)
                    .WithOne(t => t.LocalRule)
                    .HasForeignKey(t => t.LocalRuleId)

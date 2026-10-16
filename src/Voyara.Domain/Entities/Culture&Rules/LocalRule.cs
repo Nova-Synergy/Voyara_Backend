@@ -29,7 +29,7 @@ namespace Voyara.Domain.Entities.Culture_Rules
         /// <summary>
         /// Identifier of the entity the rule applies to, stored as text because the referenced entities use
         /// different key types. It holds the <c>int</c> Id of a country or city, or the <c>Guid</c> Id of a destination,
-        /// according to <see cref="Scope"/>. These entities are <c>«ref»</c>s owned by other modules, so no foreign key is created.
+        /// according to <see cref="Scope"/>. No foreign key is created because the target depends on <see cref="Scope"/>.
         /// </summary>
         public string ScopeId { get; set; } = null!;
 
@@ -39,8 +39,11 @@ namespace Voyara.Domain.Entities.Culture_Rules
         /// <summary>Where the rule comes from (for example, an authority name, a law reference or a website).</summary>
         public string Source { get; set; } = null!;
 
-        /// <summary>Date and time (UTC recommended) when the rule was last reviewed for accuracy.</summary>
-        public DateTime LastReviewedAt { get; set; }
+        /// <summary>
+        /// UTC timestamp when the rule was last reviewed for accuracy. Must have a zero offset
+        /// (for example <see cref="DateTimeOffset.UtcNow"/>) because PostgreSQL <c>timestamptz</c> only accepts UTC values.
+        /// </summary>
+        public DateTimeOffset LastReviewedAt { get; set; }
 
         /// <summary>
         /// Localized versions of the rule. Composition: translations cannot exist without their rule.

@@ -9,15 +9,16 @@ using Voyara.Domain.Entities.Transportation;
 
 namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
 {
+
     /// <summary>
     /// EF Core Fluent API mapping for <see cref="TransportRoute"/>.
     /// </summary>
-    public class TransportRouteConfiguration : IEntityTypeConfiguration<TransportRoute>
+    public sealed class TransportRouteConfiguration : IEntityTypeConfiguration<TransportRoute>
     {
         /// <inheritdoc />
         public void Configure(EntityTypeBuilder<TransportRoute> builder)
         {
-            builder.ToTable("TransportRoutes");
+            builder.ToTable("transport_routes");
 
             builder.HasKey(x => x.Id);
 

@@ -13,15 +13,15 @@ namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
     /// EF Core Fluent API mapping for <see cref="CityTransport"/>.
     /// </summary>
     /// <remarks>
-    /// <see cref="CityTransport.CityId"/> references the <c>City</c> <c>«ref»</c> from another module,
-    /// so it is mapped as a plain indexed column without a foreign key constraint.
+    /// <see cref="CityTransport.CityId"/> references the <c>City</c> <c>«ref»</c>, which is not an entity of this
+    /// model yet, so it is mapped as a plain indexed column without a foreign key constraint.
     /// </remarks>
-    public class CityTransportConfiguration : IEntityTypeConfiguration<CityTransport>
+    public sealed class CityTransportConfiguration : IEntityTypeConfiguration<CityTransport>
     {
         /// <inheritdoc />
         public void Configure(EntityTypeBuilder<CityTransport> builder)
         {
-            builder.ToTable("CityTransports");
+            builder.ToTable("city_transports");
 
             builder.HasKey(x => x.Id);
 

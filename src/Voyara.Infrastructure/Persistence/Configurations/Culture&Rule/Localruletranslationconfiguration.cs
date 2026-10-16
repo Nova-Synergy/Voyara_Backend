@@ -9,15 +9,16 @@ using Voyara.Domain.Entities.Culture_Rules;
 
 namespace Voyara.Infrastructure.Persistence.Configurations.Culture_Rule
 {
+
     /// <summary>
     /// EF Core Fluent API mapping for <see cref="LocalRuleTranslation"/>.
     /// </summary>
-    public class LocalRuleTranslationConfiguration : IEntityTypeConfiguration<LocalRuleTranslation>
+    public sealed class LocalRuleTranslationConfiguration : IEntityTypeConfiguration<LocalRuleTranslation>
     {
         /// <inheritdoc />
         public void Configure(EntityTypeBuilder<LocalRuleTranslation> builder)
         {
-            builder.ToTable("LocalRuleTranslations");
+            builder.ToTable("local_rule_translations");
 
             // Composite key: one translation per language for each rule.
             builder.HasKey(x => new { x.LocalRuleId, x.LanguageCode });

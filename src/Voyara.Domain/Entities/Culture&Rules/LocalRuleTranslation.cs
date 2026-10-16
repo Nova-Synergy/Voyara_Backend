@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Voyara.Domain.Entities.Culture_Rules
 {
+
     /// <summary>
     /// The text of a <see cref="LocalRule"/> in one language.
     /// </summary>
@@ -15,7 +16,7 @@ namespace Voyara.Domain.Entities.Culture_Rules
     /// </remarks>
     public class LocalRuleTranslation
     {
-        /// <summary>Foreign key to the <see cref="LocalRule"/> this translation belongs to. Part of the primary key.</summary>
+        /// <summary>Foreign key to the <see cref="Culture_Rules.LocalRule"/> this translation belongs to. Part of the primary key.</summary>
         public Guid LocalRuleId { get; set; }
 
         /// <summary>The rule this translation belongs to.</summary>

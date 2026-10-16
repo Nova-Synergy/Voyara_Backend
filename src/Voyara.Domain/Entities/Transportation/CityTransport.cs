@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Voyara.Domain.Entities.Catalog;
 using CatalogDestination = Voyara.Domain.Entities.Catalog.Destination;
-using Voyara.Domain.Refrence_Class;
 namespace Voyara.Domain.Entities.Transportation
 {
     /// <summary>
@@ -22,8 +21,8 @@ namespace Voyara.Domain.Entities.Transportation
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Identifier of the city this entry belongs to. The city is a <c>«ref»</c> owned by another module
-        /// (see <see cref="TravelBridge.Domain.Refs.City"/>), so only its Id is stored and no foreign key is created.
+        /// Identifier of the city this entry belongs to. The city is a <c>«ref»</c> in the domain model,
+        /// so only its Id is stored and no foreign key is created.
         /// </summary>
         public int CityId { get; set; }
 
@@ -48,8 +47,11 @@ namespace Voyara.Domain.Entities.Transportation
         /// <summary>Safety tips and warnings related to using this transport option.</summary>
         public string SafetyInfo { get; set; } = null!;
 
-        /// <summary>Date and time (UTC recommended) of the last update to this entry.</summary>
-        public DateTime UpdatedAt { get; set; }
+        /// <summary>
+        /// UTC timestamp of the last update to this entry. Must have a zero offset (for example
+        /// <see cref="DateTimeOffset.UtcNow"/>) because PostgreSQL <c>timestamptz</c> only accepts UTC values.
+        /// </summary>
+        public DateTimeOffset UpdatedAt { get; set; }
 
         /// <summary>Routes offered by this transport option. Composition: routes cannot exist without their parent.</summary>
         public ICollection<TransportRoute> Routes { get; set; } = new List<TransportRoute>();

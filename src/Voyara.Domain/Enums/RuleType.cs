@@ -8,7 +8,7 @@ using Voyara.Domain.Entities.Culture_Rules;
 namespace Voyara.Domain.Enums
 {
     /// <summary>
-    /// Categorizes a <see cref="LocalRule"/> by the kind of behavior or restriction it describes.
+    /// Categorizes a local rule by the kind of behavior or restriction it describes.
     /// </summary>
     public enum RuleType
     {

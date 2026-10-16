@@ -5,25 +5,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voyara.Domain.Entities.Catalog;
 using Voyara.Domain.Entities.Transportation;
 
 namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
 {
+
     /// <summary>
     /// EF Core Fluent API mapping for the <see cref="DestinationTransport"/> join entity.
     /// </summary>
     /// <remarks>
-    /// <see cref="DestinationTransport.DestinationId"/> references the <c>Destination</c> <c>«ref»</c> from another
-    /// module, so it is mapped as a plain indexed column without a foreign key constraint.
+    /// Links <see cref="Destination"/> (Catalog) to <see cref="CityTransport"/>. The foreign key to the destination
+    /// has no navigation property, so the Catalog aggregate does not depend on Transportation.
     /// </remarks>
-    public class DestinationTransportConfiguration : IEntityTypeConfiguration<DestinationTransport>
+    public sealed class DestinationTransportConfiguration : IEntityTypeConfiguration<DestinationTransport>
     {
         /// <inheritdoc />
         public void Configure(EntityTypeBuilder<DestinationTransport> builder)
         {
-            builder.ToTable("DestinationTransports");
+            builder.ToTable("destination_transports");
 
             // Composite key prevents linking the same destination to the same transport twice.
+            // Its leading column (DestinationId) also serves "which transports reach this destination" queries,
+            // so no extra index is needed.
             builder.HasKey(x => new { x.DestinationId, x.CityTransportId });
 
             builder.HasOne(x => x.CityTransport)
@@ -31,8 +35,10 @@ namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
                    .HasForeignKey(x => x.CityTransportId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Supports "which transports reach this destination" queries.
-            builder.HasIndex(x => x.DestinationId);
+            builder.HasOne<Destination>()
+                   .WithMany()
+                   .HasForeignKey(x => x.DestinationId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
