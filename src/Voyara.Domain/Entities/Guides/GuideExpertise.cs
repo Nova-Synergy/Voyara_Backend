@@ -19,10 +19,5 @@ namespace Voyara.Domain.Entities.Guides
         /// Navigation property to the associated guide profile.
         /// </summary>
         public GuideProfile? GuideProfile { get; private set; }
-
-        /// <summary>
-        /// Navigation property to the associated category.
-        /// </summary>
-        public Category? Category { get; private set; }
     }
 }
