@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voyara.Domain.Entities.AiAssistant;
 using Voyara.SharedKernel.Entities;
 
 namespace Voyara.Domain.Entities.Guides
@@ -12,6 +13,11 @@ namespace Voyara.Domain.Entities.Guides
     /// </summary>
     public sealed class ChatThread : AuditableEntity
     {
+        /// <summary>
+        /// Gets the collection of messages in the conversation thread.
+        /// </summary>
+        private readonly List<ChatMessage> _messages = new();
+
         /// <summary>
         /// Gets the identifier of the associated guide request.
         /// </summary>
@@ -27,9 +33,73 @@ namespace Voyara.Domain.Entities.Guides
         /// </summary>
         public GuideRequest GuideRequest { get; private set; } = null!;
 
+        /// <summary>Read-only view. Messages are added only through <see cref="PostMessage"/>.</summary>
+        public IReadOnlyCollection<ChatMessage> Messages => _messages.AsReadOnly();
+
         /// <summary>
-        /// Gets the messages belonging to this conversation thread.
+        /// Initializes a new instance of the ChatThread class. 
         /// </summary>
-        public ICollection<ChatMessage> Messages { get; private set; } = new List<ChatMessage>();
+        /// <remarks>This constructor is private and is intended for internal use only. Instances of
+        /// ChatThread cannot be created directly by consumers.</remarks>
+        private ChatThread()
+        {
+        }
+
+        /// <summary>
+        /// Creates a new chat thread for the specified guide request.
+        /// </summary>
+        /// <param name="guideRequestId">The identifier of the guide request.</param>
+        /// <returns>The created <see cref="ChatThread"/> instance.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static ChatThread Create(Guid guideRequestId)
+        {
+            if (guideRequestId == Guid.Empty)
+                throw new ArgumentException("A guide request is required.", nameof(guideRequestId));
+
+            return new ChatThread { GuideRequestId = guideRequestId };
+        }
+
+        /// <summary>
+        /// Posts a message. Closed threads reject messages, and only the two parties of the request may post.
+        /// The caller supplies the parties' user ids (tourist = request.UserId, guide = guideProfile.UserId).
+        /// </summary>
+        public ChatMessage PostMessage(Guid senderId, string text, Guid touristUserId, Guid guideUserId, DateTimeOffset now)
+        {
+            if (IsClosed)
+                throw new InvalidOperationException("Cannot post a message to a closed thread.");
+
+            EnsureParticipant(senderId, touristUserId, guideUserId);
+
+            var message = ChatMessage.Create(Id, senderId, text, now);
+            _messages.Add(message);
+            return message;
+        }
+
+        /// <summary>
+        /// Marks a message as read by the other party. Reading is still allowed on a closed thread.
+        /// </summary>
+        public void MarkMessageAsRead(Guid messageId, Guid readerId, Guid touristUserId, Guid guideUserId, DateTimeOffset now)
+        {
+            EnsureParticipant(readerId, touristUserId, guideUserId);
+
+            var message = _messages.FirstOrDefault(m => m.Id == messageId)
+                ?? throw new InvalidOperationException("Message was not found in this thread.");
+
+            message.MarkAsRead(readerId, now);
+        }
+
+        /// <summary>
+        /// Closes the thread. Internal: GuideRequest closes its threads when it is cancelled or completed.
+        /// </summary>
+        public void Close() => IsClosed = true;
+
+        private static void EnsureParticipant(Guid userId, Guid touristUserId, Guid guideUserId)
+        {
+            if (userId == Guid.Empty || touristUserId == Guid.Empty || guideUserId == Guid.Empty)
+                throw new ArgumentException("User ids must not be empty.");
+
+            if (userId != touristUserId && userId != guideUserId)
+                throw new InvalidOperationException("Only the two parties of the request can use this chat.");
+        }
     }
 }
