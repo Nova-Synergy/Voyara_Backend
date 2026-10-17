@@ -30,7 +30,6 @@ namespace Voyara.Domain.Entities.Guides
         /// <summary>
         /// Gets the messages belonging to this conversation thread.
         /// </summary>
-        public ICollection<ChatMessage> Messages { get; private set; }
-            = new List<ChatMessage>();
+        public ICollection<ChatMessage> Messages { get; private set; } = new List<ChatMessage>();
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Voyara.Domain.Entities.Identity;
 using Voyara.SharedKernel.Entities;
 
 namespace Voyara.Domain.Entities.Guides
