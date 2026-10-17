@@ -1,5 +1,6 @@
 ﻿using System;
 using Voyara.SharedKernel.Entities;
+using Voyara.Domain.Enums;
 
 namespace Voyara.Domain.Entities.Guides
 {
