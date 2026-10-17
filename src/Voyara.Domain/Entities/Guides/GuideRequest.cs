@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Voyara.Domain.Enums;
+﻿using Voyara.Domain.Enums; 
 using Voyara.SharedKernel.Entities;
+using Voyara.Domain.Entities.Identity;
+using Voyara.Domain.Entities.Catalog;
 
 namespace Voyara.Domain.Entities.Guides
 {
@@ -81,7 +78,7 @@ namespace Voyara.Domain.Entities.Guides
         /// <summary>
         /// Gets the chat threads associated with this request.
         /// </summary>
-        public ICollection<GuideChatThread> GuideChatThreads { get; private set; } = new List<GuideChatThread>();
+        public ICollection<ChatThread> ChatThreads { get; private set; } = new List<ChatThread>();
         
         /// <summary>
         /// Gets the optional review associated with this request.
