@@ -5,6 +5,7 @@ namespace Voyara.Domain.Entities.Identity
 {
     /// <summary>
     /// Represents a record of a destination a tourist visited before.
+    /// It is created and removed only through its <see cref="TouristProfile"/>.
     /// </summary>
     public sealed class VisitHistory : BaseEntity
     {
@@ -32,5 +33,25 @@ namespace Voyara.Domain.Entities.Identity
         /// Gets the visited destination.
         /// </summary>
         public Destination Destination { get; private set; } = null!;
+
+        private VisitHistory()
+        {
+        }
+
+        internal static VisitHistory Create(TouristProfile profile, Guid destinationId, DateTime visitedOn)
+        {
+            ArgumentNullException.ThrowIfNull(profile);
+
+            if (destinationId == Guid.Empty)
+                throw new ArgumentException("A destination is required.", nameof(destinationId));
+
+            return new VisitHistory
+            {
+                TouristProfile = profile,
+                TouristProfileId = profile.Id,
+                DestinationId = destinationId,
+                VisitedOn = visitedOn.Date
+            };
+        }
     }
 }
