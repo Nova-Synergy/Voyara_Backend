@@ -1,40 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voyara.Domain.Entities.Transportation;
 
-namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
+namespace Voyara.Infrastructure.Persistence.Configurations.Transportation;
+
+/// <summary>
+/// Mapping for the TransportType reference data: fixed identifiers, unique code and seed data.
+/// </summary>
+public sealed class TransportTypeConfiguration : IEntityTypeConfiguration<TransportType>
 {
-    /// <summary>
-    /// EF Core Fluent API mapping for <see cref="TransportType"/>, including seed data.
-    /// </summary>
-    public class TransportTypeConfiguration : IEntityTypeConfiguration<TransportType>
+    /// <inheritdoc />
+    public void Configure(EntityTypeBuilder<TransportType> builder)
     {
-        /// <inheritdoc />
-        public void Configure(EntityTypeBuilder<TransportType> builder)
-        {
-            builder.ToTable("TransportTypes");
+        builder.ToTable("transport_types");
+        builder.HasKey(t => t.Id);
 
-            builder.HasKey(x => x.Id);
+        // Fixed reference data with explicitly assigned identifiers (no identity column).
+        builder.Property(t => t.Id).ValueGeneratedNever();
 
-            builder.Property(x => x.Code).IsRequired().HasMaxLength(50);
-            builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
+        builder.Property(t => t.Code).HasMaxLength(TransportType.MaxCodeLength).IsRequired();
+        builder.Property(t => t.Name).HasMaxLength(TransportType.MaxNameLength).IsRequired();
 
-            // Code identifies the type in code and APIs, so it must be unique.
-            builder.HasIndex(x => x.Code).IsUnique();
+        builder.HasIndex(t => t.Code).IsUnique();
 
-            // Seed data for the lookup table.
-            builder.HasData(
-                new TransportType { Id = 1, Code = "METRO", Name = "Metro" },
-                new TransportType { Id = 2, Code = "BUS", Name = "Bus" },
-                new TransportType { Id = 3, Code = "MICROBUS", Name = "Microbus" },
-                new TransportType { Id = 4, Code = "TAXI", Name = "Taxi" },
-                new TransportType { Id = 5, Code = "RIDE_HAILING", Name = "Ride-hailing" },
-                new TransportType { Id = 6, Code = "TRAM", Name = "Tram" });
-        }
+        builder.HasData(
+            new { Id = 1, Code = "METRO", Name = "Metro" },
+            new { Id = 2, Code = "BUS", Name = "Bus" },
+            new { Id = 3, Code = "MICROBUS", Name = "Microbus" },
+            new { Id = 4, Code = "TAXI", Name = "Taxi" },
+            new { Id = 5, Code = "RIDE_HAILING", Name = "Ride-hailing" },
+            new { Id = 6, Code = "TRAM", Name = "Tram" });
     }
 }
