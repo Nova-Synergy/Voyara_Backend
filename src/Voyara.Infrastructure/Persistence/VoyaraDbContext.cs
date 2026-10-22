@@ -13,6 +13,9 @@ public sealed class VoyaraDbContext : DbContext
     {
     }
 
+    /// <summary>Destination categories.</summary>
+    public DbSet<Category> Categories => Set<Category>();
+
     /// <summary>Catalog destinations (reference aggregate).</summary>
     public DbSet<Destination> Destinations => Set<Destination>();
 
