@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Voyara.Domain.Entities.Catalog;
+using Voyara.Domain.Entities.Identity;
 using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Domain.Entities.Transportation;
 namespace Voyara.Infrastructure.Persistence;
@@ -12,6 +13,18 @@ public sealed class VoyaraDbContext : DbContext
         : base(options)
     {
     }
+
+    /// <summary>User accounts (aggregate root: roles, refresh tokens).</summary>
+    public DbSet<User> Users => Set<User>();
+
+    /// <summary>Authorization roles.</summary>
+    public DbSet<Role> Roles => Set<Role>();
+
+    /// <summary>Tourist interests.</summary>
+    public DbSet<Interest> Interests => Set<Interest>();
+
+    /// <summary>Tourist profiles (aggregate root: interests, visit history).</summary>
+    public DbSet<TouristProfile> TouristProfiles => Set<TouristProfile>();
 
     /// <summary>Catalog destinations (reference aggregate).</summary>
     public DbSet<Destination> Destinations => Set<Destination>();
