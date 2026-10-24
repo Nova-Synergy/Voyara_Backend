@@ -1,30 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Voyara.Domain.Entities.Culture_Rules;
 
-namespace Voyara.Infrastructure.Persistence.Configurations.Culture_Rule
+namespace Voyara.Infrastructure.Persistence.Configurations.Culture_Rules;
+
+/// <summary>
+/// Mapping for <see cref="LocalRuleTranslation"/>, a value object owned by <see cref="LocalRule"/>.
+/// It is applied from <see cref="LocalRuleConfiguration"/>.
+/// </summary>
+internal static class LocalRuleTranslationConfiguration
 {
-    /// <summary>
-    /// EF Core Fluent API mapping for <see cref="LocalRuleTranslation"/>.
-    /// </summary>
-    public class LocalRuleTranslationConfiguration : IEntityTypeConfiguration<LocalRuleTranslation>
+    /// <summary>Configures the owned translation table.</summary>
+    public static void Configure(OwnedNavigationBuilder<LocalRule, LocalRuleTranslation> builder)
     {
-        /// <inheritdoc />
-        public void Configure(EntityTypeBuilder<LocalRuleTranslation> builder)
-        {
-            builder.ToTable("LocalRuleTranslations");
+        builder.ToTable("local_rule_translations");
+        builder.WithOwner().HasForeignKey("LocalRuleId");
 
-            // Composite key: one translation per language for each rule.
-            builder.HasKey(x => new { x.LocalRuleId, x.LanguageCode });
+        // One translation per language for each rule.
+        builder.HasKey("LocalRuleId", nameof(LocalRuleTranslation.LanguageCode));
 
-            builder.Property(x => x.LanguageCode).IsRequired().HasMaxLength(10);
-            builder.Property(x => x.Title).IsRequired().HasMaxLength(200);
-            builder.Property(x => x.Content).IsRequired().HasMaxLength(4000);
-        }
+        builder.Property(t => t.LanguageCode)
+            .HasMaxLength(LocalRuleTranslation.MaxLanguageCodeLength)
+            .IsRequired();
+        builder.Property(t => t.Title)
+            .HasMaxLength(LocalRuleTranslation.MaxTitleLength)
+            .IsRequired();
+        builder.Property(t => t.Content)
+            .HasMaxLength(LocalRuleTranslation.MaxContentLength)
+            .IsRequired();
     }
 }
