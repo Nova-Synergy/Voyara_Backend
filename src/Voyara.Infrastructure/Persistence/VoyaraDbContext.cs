@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Voyara.Domain.Entities.Catalog;
 using Voyara.Infrastructure.Persistence.Outbox;
-
+using Voyara.Domain.Entities.Transportation;
 namespace Voyara.Infrastructure.Persistence;
 
 /// <summary>EF Core context for the platform; module configurations are applied from this assembly.</summary>
@@ -18,6 +18,12 @@ public sealed class VoyaraDbContext : DbContext
 
     /// <summary>Transactional outbox messages.</summary>
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
+    /// <summary>Reference data for transport types.</summary>
+    public DbSet<TransportType> TransportTypes => Set<TransportType>();
+
+    /// <summary>City transport aggregates.</summary>
+    public DbSet<CityTransport> CityTransports => Set<CityTransport>();
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
