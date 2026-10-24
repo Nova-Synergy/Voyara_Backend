@@ -18,8 +18,8 @@ public sealed class LocalRule : AuditableEntity
 
     public DateTimeOffset? LastReviewedAt { get; private set; }
 
-    public ICollection<LocalRuleTranslation> Translations
-    { get; private set; } = new List<LocalRuleTranslation>();
+    public ICollection<LocalRuleTranslation> Translations { get; private set; }
+        = new List<LocalRuleTranslation>();
 
     private LocalRule()
     {
@@ -36,7 +36,7 @@ public sealed class LocalRule : AuditableEntity
         ScopeType = scopeType;
         ScopeId = scopeId;
         IsOfficial = isOfficial;
-        Source = source.Trim();
+        Source = source;
     }
 
     public static LocalRule Create(
@@ -47,31 +47,39 @@ public sealed class LocalRule : AuditableEntity
         string source)
     {
         if (scopeId == Guid.Empty)
+        {
             throw new ArgumentException(
                 "ScopeId cannot be empty.",
                 nameof(scopeId));
+        }
 
-        if (string.IsNullOrWhiteSpace(source))
-            throw new ArgumentException(
-                "A source reference is required.",
-                nameof(source));
+        ArgumentException.ThrowIfNullOrWhiteSpace(source);
 
         return new LocalRule(
             ruleType,
             scopeType,
             scopeId,
             isOfficial,
-            source);
+            source.Trim());
+    }
+
+    public void UpdateSource(string source)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(source);
+
+        Source = source.Trim();
     }
 
     public void MarkReviewed(DateTimeOffset reviewedAt)
     {
         if (reviewedAt > DateTimeOffset.UtcNow.AddMinutes(5))
+        {
             throw new ArgumentOutOfRangeException(
                 nameof(reviewedAt),
                 "Review date cannot be in the future.");
+        }
 
-        LastReviewedAt = reviewedAt;
+        LastReviewedAt = reviewedAt.ToUniversalTime();
     }
 
     public void AddTranslation(LocalRuleTranslation translation)
@@ -79,15 +87,29 @@ public sealed class LocalRule : AuditableEntity
         ArgumentNullException.ThrowIfNull(translation);
 
         if (Translations.Any(t =>
-            string.Equals(
-                t.LanguageCode,
-                translation.LanguageCode,
-                StringComparison.OrdinalIgnoreCase)))
+                string.Equals(
+                    t.LanguageCode,
+                    translation.LanguageCode,
+                    StringComparison.OrdinalIgnoreCase)))
         {
             throw new InvalidOperationException(
                 "A translation for this language already exists.");
         }
 
         Translations.Add(translation);
+    }
+
+    public void RemoveTranslation(Guid translationId)
+    {
+        var translation = Translations
+            .FirstOrDefault(t => t.Id == translationId);
+
+        if (translation is null)
+        {
+            throw new InvalidOperationException(
+                "Translation was not found.");
+        }
+
+        Translations.Remove(translation);
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using Voyara.Application.Abstractions;
 using Voyara.Domain.Repositories.Catalog;
+using Voyara.Domain.Repositories.Transportation;
 using Voyara.Domain.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Ai;
 using Voyara.Infrastructure.Caching;
@@ -17,8 +18,11 @@ using Voyara.Infrastructure.Persistence;
 using Voyara.Infrastructure.Persistence.Interceptors;
 using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Infrastructure.Persistence.Repositories.Catalog;
+using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
+using Voyara.Domain.Repositories.Transportation;
+using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -79,6 +83,9 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<IOutboxProcessor, OutboxProcessor>();
         services.AddScoped<ILocalRuleRepository, LocalRuleRepository>();
+
+        services.AddScoped<ICityTransportRepository, CityTransportRepository>();
+        services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
 
         return services;
     }
