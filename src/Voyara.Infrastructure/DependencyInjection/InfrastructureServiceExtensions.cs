@@ -7,6 +7,7 @@ using StackExchange.Redis;
 using Voyara.Application.Abstractions;
 using Voyara.Domain.Repositories.Catalog;
 using Voyara.Domain.Repositories.Transportation;
+using Voyara.Domain.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Ai;
 using Voyara.Infrastructure.Caching;
 using Voyara.Infrastructure.Currency;
@@ -18,6 +19,7 @@ using Voyara.Infrastructure.Persistence.Interceptors;
 using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Infrastructure.Persistence.Repositories.Catalog;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
+using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
 using Voyara.Domain.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
@@ -80,6 +82,7 @@ public static class InfrastructureServiceExtensions
         services.AddSingleton<IRecommendationStrategy, PopularityRecommendationStrategy>();
 
         services.AddScoped<IOutboxProcessor, OutboxProcessor>();
+        services.AddScoped<ILocalRuleRepository, LocalRuleRepository>();
 
         services.AddScoped<ICityTransportRepository, CityTransportRepository>();
         services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
