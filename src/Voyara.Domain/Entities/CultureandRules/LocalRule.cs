@@ -167,6 +167,9 @@ public sealed class LocalRule : AggregateRoot
         return this;
     }
 
+    /// <summary>Marks the rule as deleted (soft delete). Deleted rules no longer appear in queries.</summary>
+    public void Delete() => IsDeleted = true;
+
     private static bool SameLanguage(string left, string? right) =>
         string.Equals(left, right?.Trim(), StringComparison.OrdinalIgnoreCase);
 
