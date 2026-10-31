@@ -19,6 +19,21 @@ public sealed class CityTransportRepository : ICityTransportRepository
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<CityTransport>> ListByCityAsync(
+        int cityId,
+        CancellationToken cancellationToken = default)
+    {
+        var results = await _context.CityTransports
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Where(c => c.CityId == cityId)
+            .OrderBy(c => c.TransportTypeId)
+            .ToListAsync(cancellationToken);
+
+        return results;
+    }
+
+    /// <inheritdoc />
     public Task<bool> ExistsAsync(int cityId, int transportTypeId, CancellationToken cancellationToken = default)
         => _context.CityTransports
             .AnyAsync(c => c.CityId == cityId && c.TransportTypeId == transportTypeId, cancellationToken);

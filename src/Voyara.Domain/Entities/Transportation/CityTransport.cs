@@ -213,6 +213,9 @@ public sealed class CityTransport : AggregateRoot
         return this;
     }
 
+    /// <summary>Marks the city transport as deleted (soft delete). Deleted entries no longer appear in queries.</summary>
+    public void Delete() => IsDeleted = true;
+
     private TransportRoute? FindRoute(Guid routeId) => _routes.FirstOrDefault(r => r.Id == routeId);
 
     private void Apply(Details details)
