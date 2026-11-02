@@ -46,4 +46,14 @@ public static class ReviewErrors
         Error.Conflict(
             "Review.InvalidTransition",
             $"Cannot {operation} a review that is {current}.");
+
+    public static readonly Error NotOwner =
+    Error.Unauthorized(
+        "Review.NotOwner",
+        "Only the review author can perform this operation.");
+
+    public static readonly Error AlreadyDeleted =
+        Error.Conflict(
+            "Review.AlreadyDeleted",
+            "This review has already been deleted.");
 }

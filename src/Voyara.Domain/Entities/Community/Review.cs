@@ -196,4 +196,54 @@ public sealed class Review : AggregateRoot
 
         return Result.Success();
     }
+
+    /// <summary>
+    /// Updates the review content. Edited reviews return to Pending
+    /// so the new content is moderated before becoming public again.
+    /// </summary>
+    public Result Update(
+        Guid userId,
+        int rating,
+        string text,
+        DateOnly visitDate)
+    {
+        if (userId == Guid.Empty || userId != UserId)
+            return Result.Failure(ReviewErrors.NotOwner);
+
+        if (IsDeleted)
+            return Result.Failure(ReviewErrors.AlreadyDeleted);
+
+        if (rating is < 1 or > 5)
+            return Result.Failure(ReviewErrors.InvalidRating);
+
+        if (string.IsNullOrWhiteSpace(text))
+            return Result.Failure(ReviewErrors.TextRequired);
+
+        if (visitDate > DateOnly.FromDateTime(DateTime.UtcNow))
+            return Result.Failure(ReviewErrors.VisitDateInFuture);
+
+        Rating = rating;
+        Text = text.Trim();
+        VisitDate = visitDate;
+
+        Status = ReviewStatus.Pending;
+        ModeratedAt = null;
+        RejectionReason = null;
+
+        return Result.Success();
+    }
+
+    /// <summary>Soft-deletes the review if the supplied user owns it.</summary>
+    public Result Delete(Guid userId)
+    {
+        if (userId == Guid.Empty || userId != UserId)
+            return Result.Failure(ReviewErrors.NotOwner);
+
+        if (IsDeleted)
+            return Result.Failure(ReviewErrors.AlreadyDeleted);
+
+        IsDeleted = true;
+
+        return Result.Success();
+    }
 }

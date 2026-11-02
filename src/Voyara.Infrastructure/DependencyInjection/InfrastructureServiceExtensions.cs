@@ -17,6 +17,8 @@ using Voyara.Infrastructure.Persistence.Interceptors;
 using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Infrastructure.Persistence.Repositories.Catalog;
 using Voyara.Infrastructure.Recommendations;
+using Voyara.Domain.Repositories.Community;
+using Voyara.Infrastructure.Persistence.Repositories.Community;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -43,6 +45,10 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDestinationRepository, DestinationRepository>();
+
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+        services.AddScoped<IPlaceSuggestionRepository, PlaceSuggestionRepository>();
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
