@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Voyara.Domain.Entities.Identity;
 
-namespace Voyara.Api.DTOs.Identity;
+namespace Voyara.Application.DTOs.Identity;
 
 /// <summary>A user account as returned by the API. Never exposes the password hash or refresh tokens.</summary>
 public sealed class UserReadDto

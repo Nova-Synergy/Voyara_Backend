@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Voyara.Api.Authorization;
-using Voyara.Api.DTOs.Identity;
+using Voyara.Application.DTOs.Identity;
 using Voyara.Api.Security;
 using Voyara.Application.Abstractions;
 using Voyara.Application.Abstractions.Authorization;

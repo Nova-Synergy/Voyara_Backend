@@ -2,7 +2,7 @@
 using Voyara.Domain.Entities.Identity;
 using Voyara.Domain.Enums;
 
-namespace Voyara.Api.DTOs.Identity;
+namespace Voyara.Application.DTOs.Identity;
 
 /// <summary>A tourist (user account plus tourist profile) as returned by the API.</summary>
 public sealed class TouristReadDto

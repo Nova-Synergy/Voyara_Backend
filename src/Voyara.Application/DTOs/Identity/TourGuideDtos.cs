@@ -2,7 +2,7 @@
 using Voyara.Domain.Entities.Guides;
 using Voyara.Domain.Enums;
 
-namespace Voyara.Api.DTOs.Identity;
+namespace Voyara.Application.DTOs.Identity;
 
 /// <summary>A tour guide (user account plus guide profile) as returned by the API.</summary>
 public sealed class TourGuideReadDto
