@@ -9,5 +9,8 @@ namespace Voyara.Domain.Repositories.Catalog
     /// </summary>
     public interface IDestinationRepository
     {
+        Task<Destination?> GetByIdAsync(
+    Guid id,
+    CancellationToken cancellationToken = default);
     }
 }
