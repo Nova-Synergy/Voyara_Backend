@@ -23,6 +23,8 @@ using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
 using Voyara.Domain.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
+using Voyara.Domain.Repositories.Moderation;
+using Voyara.Infrastructure.Persistence.Repositories.Moderation;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -86,6 +88,9 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<ICityTransportRepository, CityTransportRepository>();
         services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
+
+        services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
         return services;
     }
