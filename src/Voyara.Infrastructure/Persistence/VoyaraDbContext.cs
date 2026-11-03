@@ -5,6 +5,7 @@ using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Domain.Entities.Transportation;
 using Voyara.Domain.Entities.Culture_Rules;
 namespace Voyara.Infrastructure.Persistence;
+using Voyara.Domain.Entities.Moderation;
 
 /// <summary>EF Core context for the platform; module configurations are applied from this assembly.</summary>
 public sealed class VoyaraDbContext : DbContext
@@ -41,6 +42,12 @@ public sealed class VoyaraDbContext : DbContext
 
     /// <summary>Cultural, legal and behavioral rule aggregates.</summary>
     public DbSet<LocalRule> LocalRules => Set<LocalRule>();
+
+    /// <summary>Moderation reports filed by users.</summary>
+    public DbSet<Report> Reports => Set<Report>();
+
+    /// <summary>Append-only moderation audit records.</summary>
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
