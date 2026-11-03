@@ -4,6 +4,8 @@ using Voyara.Domain.Entities.Identity;
 using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Domain.Entities.Transportation;
 using Voyara.Domain.Entities.Culture_Rules;
+using Voyara.Domain.Entities.Notifications;
+
 namespace Voyara.Infrastructure.Persistence;
 
 /// <summary>EF Core context for the platform; module configurations are applied from this assembly.</summary>
@@ -41,6 +43,17 @@ public sealed class VoyaraDbContext : DbContext
 
     /// <summary>Cultural, legal and behavioral rule aggregates.</summary>
     public DbSet<LocalRule> LocalRules => Set<LocalRule>();
+
+    /// <summary>Notifications delivered to platform users.</summary>
+    public DbSet<Notification> Notifications => Set<Notification>();
+
+    /// <summary>User preferences for notification delivery.</summary>
+    public DbSet<NotificationPreference> NotificationPreferences
+        => Set<NotificationPreference>();
+
+    /// <summary>Reusable notification message templates.</summary>
+    public DbSet<NotificationTemplate> NotificationTemplates
+        => Set<NotificationTemplate>();
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)

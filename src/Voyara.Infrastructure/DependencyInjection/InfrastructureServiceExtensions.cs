@@ -8,6 +8,7 @@ using Voyara.Application.Abstractions;
 using Voyara.Domain.Repositories.Catalog;
 using Voyara.Domain.Repositories.Transportation;
 using Voyara.Domain.Repositories.Culture_Rules;
+using Voyara.Domain.Repositories.Notifications;
 using Voyara.Infrastructure.Ai;
 using Voyara.Infrastructure.Caching;
 using Voyara.Infrastructure.Currency;
@@ -21,8 +22,10 @@ using Voyara.Infrastructure.Persistence.Repositories.Catalog;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
+using Voyara.Infrastructure.Persistence.Repositories.Notifications;
 using Voyara.Domain.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
+
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -86,6 +89,10 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<ICityTransportRepository, CityTransportRepository>();
         services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
+
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationPreferenceRepository, NotificationPreferenceRepository>();
+        services.AddScoped<INotificationTemplateRepository, NotificationTemplateRepository>();
 
         return services;
     }
