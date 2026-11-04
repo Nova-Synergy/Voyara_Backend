@@ -5,6 +5,7 @@ using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Domain.Entities.Transportation;
 using Voyara.Domain.Entities.Culture_Rules;
 namespace Voyara.Infrastructure.Persistence;
+using Voyara.Domain.Entities.LocalInfo;
 
 /// <summary>EF Core context for the platform; module configurations are applied from this assembly.</summary>
 public sealed class VoyaraDbContext : DbContext
@@ -17,7 +18,14 @@ public sealed class VoyaraDbContext : DbContext
 
     /// <summary>User accounts (aggregate root: roles, refresh tokens).</summary>
     public DbSet<User> Users => Set<User>();
+    public DbSet<AwarenessArticle> AwarenessArticles => Set<AwarenessArticle>();
 
+    public DbSet<SafetyGuide> SafetyGuides => Set<SafetyGuide>();
+
+    public DbSet<EmbassyContact> EmbassyContacts => Set<EmbassyContact>();
+
+    public DbSet<Voyara.Domain.Entities.LocalInfo.LocalRule> LocalInfoRules
+        => Set<Voyara.Domain.Entities.LocalInfo.LocalRule>();
     /// <summary>Authorization roles.</summary>
     public DbSet<Role> Roles => Set<Role>();
 
