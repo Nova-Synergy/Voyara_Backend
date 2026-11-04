@@ -24,7 +24,7 @@ public abstract class BaseApiController : ControllerBase
     protected IActionResult HandleResult(Result result)
         => result.IsSuccess ? Ok() : ToProblem(result.Error);
 
-    private IActionResult ToProblem(Error error)
+    protected IActionResult ToProblem(Error error)
     {
         var statusCode = error.Type switch
         {
