@@ -5,6 +5,7 @@ using Voyara.Domain.Entities.Identity;
 using Voyara.Domain.Entities.Transportation;
 using Voyara.Infrastructure.Persistence.Outbox;
 namespace Voyara.Infrastructure.Persistence;
+using Voyara.Domain.Entities.Moderation;
 
 using Voyara.Domain.Entities.Geography;
 using Voyara.Domain.Entities.Localization;
@@ -51,6 +52,12 @@ public sealed class VoyaraDbContext : DbContext
 
     /// <summary>Cultural, legal and behavioral rule aggregates.</summary>
     public DbSet<LocalRule> LocalRules => Set<LocalRule>();
+
+    /// <summary>Moderation reports filed by users.</summary>
+    public DbSet<Report> Reports => Set<Report>();
+
+    /// <summary>Append-only moderation audit records.</summary>
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
