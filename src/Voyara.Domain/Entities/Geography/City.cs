@@ -8,6 +8,10 @@ namespace Voyara.Domain.Entities.Geography
     /// </summary>
     public sealed class City : AuditableEntity
     {
+        /// <summary>
+        /// Gets the database-generated identifier (hides the Guid Id of the base class).
+        /// </summary>
+        public new int Id { get; private set; }
 
         /// <summary>
         /// Gets the latitude of the city center in degrees.
@@ -27,7 +31,7 @@ namespace Voyara.Domain.Entities.Geography
         /// <summary>
         /// Gets the identifier of the owning country.
         /// </summary>
-        public Guid CountryId { get; private set; }
+        public int CountryId { get; private set; }
 
         /// <summary>
         /// Gets the country that owns this city.
@@ -43,17 +47,29 @@ namespace Voyara.Domain.Entities.Geography
             ArgumentNullException.ThrowIfNull(country);
             EnsureCoordinates(latitude, longitude);
 
-            return new City { Country = country, CountryId = country.Id, Latitude = latitude, Longitude = longitude };
+            return new City
+            {
+                Country = country,
+                CountryId = country.Id,
+                Latitude = latitude,
+                Longitude = longitude,
+                IsActive = true
+            };
         }
 
-        internal void MoveCenter(double latitude, double longitude)
+
+        /// <summary>Moves the city center.</summary>
+        /// <exception cref="ArgumentOutOfRangeException">A coordinate is outside its valid range.</exception>
+        public void Relocate(double latitude, double longitude)
         {
             EnsureCoordinates(latitude, longitude);
             Latitude = latitude;
             Longitude = longitude;
         }
 
-        internal void Activate()
+        /// <summary>Makes the city visible to tourists.</summary>
+        /// <exception cref="InvalidOperationException">The city is already active.</exception>
+        public void Activate()
         {
             if (IsActive)
                 throw new InvalidOperationException("The city is already active.");
@@ -61,7 +77,15 @@ namespace Voyara.Domain.Entities.Geography
             IsActive = true;
         }
 
-        internal void Deactivate() => IsActive = false;
+        /// <summary>Hides the city from tourists.</summary>
+        /// <exception cref="InvalidOperationException">The city is already inactive.</exception>
+        public void Deactivate()
+        {
+            if (!IsActive)
+                throw new InvalidOperationException("The city is already inactive.");
+
+            IsActive = false;
+        }
 
         private static void EnsureCoordinates(double latitude, double longitude)
         {

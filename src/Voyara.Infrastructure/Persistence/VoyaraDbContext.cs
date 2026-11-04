@@ -1,11 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Voyara.Domain.Entities.Catalog;
-using Voyara.Domain.Entities.Identity;
-using Voyara.Infrastructure.Persistence.Outbox;
-using Voyara.Domain.Entities.Transportation;
 using Voyara.Domain.Entities.Culture_Rules;
+using Voyara.Domain.Entities.Identity;
+using Voyara.Domain.Entities.Transportation;
+using Voyara.Infrastructure.Persistence.Outbox;
 namespace Voyara.Infrastructure.Persistence;
 using Voyara.Domain.Entities.Moderation;
+
+using Voyara.Domain.Entities.Geography;
+using Voyara.Domain.Entities.Localization;
 
 /// <summary>EF Core context for the platform; module configurations are applied from this assembly.</summary>
 public sealed class VoyaraDbContext : DbContext
@@ -19,6 +22,7 @@ public sealed class VoyaraDbContext : DbContext
     /// <summary>User accounts (aggregate root: roles, refresh tokens).</summary>
     public DbSet<User> Users => Set<User>();
 
+    public DbSet<Language> Languages => Set<Language>();
     /// <summary>Authorization roles.</summary>
     public DbSet<Role> Roles => Set<Role>();
 
@@ -29,8 +33,14 @@ public sealed class VoyaraDbContext : DbContext
     public DbSet<TouristProfile> TouristProfiles => Set<TouristProfile>();
 
     /// <summary>Catalog destinations (reference aggregate).</summary>
+    public DbSet<Country> Countries => Set<Country>();
+
+    public DbSet<City> Cities => Set<City>();
+
+    /// <summary>Catalog destinations (reference aggregate).</summary>
     public DbSet<Destination> Destinations => Set<Destination>();
 
+    public DbSet<Category> Categories => Set<Category>();
     /// <summary>Transactional outbox messages.</summary>
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
