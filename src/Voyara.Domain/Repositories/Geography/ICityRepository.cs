@@ -9,5 +9,8 @@ namespace Voyara.Domain.Repositories.Geography
     /// </summary>
     public interface ICityRepository
     {
+        Task<bool> ActiveCityExistsAsync(
+        int cityId,
+        CancellationToken cancellationToken);
     }
 }
