@@ -1,4 +1,5 @@
-﻿using Voyara.SharedKernel.Results;
+﻿
+using Voyara.SharedKernel.Results;
 
 namespace Voyara.Domain.Entities.Community;
 

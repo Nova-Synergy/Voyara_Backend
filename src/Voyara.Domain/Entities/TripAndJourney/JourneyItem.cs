@@ -1,5 +1,5 @@
-﻿using Voyara.Domain.Entities.Catalog;
-using Voyara.Domain.Entities.LocalInfo;
+using Voyara.Domain.Entities.Catalog;
+using Voyara.Domain.Entities.Geography;
 using Voyara.Domain.Enums;
 using Voyara.SharedKernel.Entities;
 
@@ -35,8 +35,8 @@ public sealed class JourneyItem : BaseEntity
     /// <summary>
     /// Gets the identifier of the city where this stop occurs, if applicable.
     /// </summary>
-    /// <value>The optional integer foreign key pointing to the <see cref="City"/>.</value>
-    public int? CityId { get; private set; }
+    /// <value>The optional foreign key pointing to the <see cref="City"/>.</value>
+    public Guid? CityId { get; private set; }
 
     /// <summary>
     /// Gets the navigation reference to the city.
@@ -81,7 +81,7 @@ public sealed class JourneyItem : BaseEntity
     private JourneyItem(
         Guid journeyDayId,
         Guid destinationId,
-        int? cityId,
+        Guid? cityId,
         int sortOrder,
         TimeSpan? startTime,
         TimeSpan? endTime,
@@ -111,7 +111,7 @@ public sealed class JourneyItem : BaseEntity
     public static JourneyItem Create(
         Guid journeyDayId,
         Guid destinationId,
-        int? cityId,
+        Guid? cityId,
         int sortOrder,
         TimeSpan? startTime = null,
         TimeSpan? endTime = null,

@@ -13,7 +13,7 @@
         public int Id { get; private set; }
 
         /// <summary>
-        /// Gets the unique role name.
+        /// Gets the  role name.
         /// </summary>
         public string Name { get; private set; } = string.Empty;
 

@@ -83,8 +83,12 @@ public sealed class PlaceSuggestion : AggregateRoot
         var suggestion = new PlaceSuggestion(
             userId, name.Trim(), description.Trim(), location, reason.Trim());
 
-        suggestion.RaiseDomainEvent(new PlaceSuggestionSubmittedDomainEvent(
-            Guid.NewGuid(), DateTimeOffset.UtcNow, suggestion.Id, suggestion.UserId));
+        suggestion.RaiseDomainEvent(
+            new PlaceSuggestionSubmittedDomainEvent(
+            Guid.NewGuid(),
+            DateTimeOffset.UtcNow,
+            suggestion.Id,
+            suggestion.UserId));
 
         return suggestion;
     }
@@ -112,7 +116,7 @@ public sealed class PlaceSuggestion : AggregateRoot
     }
 
     /// <summary>Approves a suggestion that is awaiting a decision.</summary>
-    public Result Approve(Guid adminId)
+    public Result Approve(Guid adminId, string? reason = null)
     {
         if (adminId == Guid.Empty)
             return Result.Failure(PlaceSuggestionErrors.AdminRequired);
@@ -122,7 +126,7 @@ public sealed class PlaceSuggestion : AggregateRoot
                 PlaceSuggestionErrors.InvalidTransition("approve", Status));
 
         Status = SuggestionStatus.Approved;
-        DecisionReason = null;
+        DecisionReason = reason?.Trim();
 
         RaiseDomainEvent(new PlaceSuggestionApprovedDomainEvent(
             Guid.NewGuid(), DateTimeOffset.UtcNow, Id, UserId, adminId,

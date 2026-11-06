@@ -33,7 +33,7 @@ public sealed class CityTransport : AggregateRoot
     private readonly List<DestinationTransport> _destinations = [];
 
     /// <summary>Identifier of the city (a reference to another aggregate, by Id only).</summary>
-    public int CityId { get; private set; }
+    public Guid CityId { get; private set; }
 
     /// <summary>Identifier of the <see cref="TransportType"/> (a reference to another aggregate, by Id only).</summary>
     public int TransportTypeId { get; private set; }
@@ -63,7 +63,7 @@ public sealed class CityTransport : AggregateRoot
     {
     }
 
-    private CityTransport(int cityId, int transportTypeId, Details details)
+    private CityTransport(Guid cityId, int transportTypeId, Details details)
     {
         CityId = cityId;
         TransportTypeId = transportTypeId;
@@ -72,7 +72,7 @@ public sealed class CityTransport : AggregateRoot
 
     /// <summary>Creates a city transport after validating its invariants.</summary>
     public static Result<CityTransport> Create(
-        int cityId,
+        Guid cityId,
         int transportTypeId,
         string? description,
         decimal approxCost,
@@ -80,7 +80,7 @@ public sealed class CityTransport : AggregateRoot
         string? operatingHours,
         string? safetyInfo)
     {
-        if (cityId <= 0)
+        if (cityId == Guid.Empty)
         {
             return Result.Failure<CityTransport>(CityTransportErrors.InvalidCityId);
         }

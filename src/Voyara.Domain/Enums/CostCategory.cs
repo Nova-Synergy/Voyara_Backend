@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace Voyara.Domain.Enums
 {
-    internal class CostCategory
+    public enum CostCategory
     {
+        Accommodation,
+        Transportation,
+        Food,
+        Activities,
+        Tickets,
+        Shopping,
+        Miscellaneous
     }
 }

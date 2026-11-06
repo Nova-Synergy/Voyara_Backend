@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Voyara.Domain.Entities.Geography;
 using Voyara.Domain.Entities.Identity;
 using Voyara.Domain.Enums;
@@ -54,7 +54,7 @@ namespace Voyara.Domain.Entities.Guides
         /// <summary>
         /// Gets the identifier of the city associated with the guide.
         /// </summary>
-        public int CityId { get; private set; }
+        public Guid CityId { get; private set; }
 
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Voyara.Domain.Entities.Guides
         /// </exception>
         public static GuideProfile Create(
             Guid userId,
-            int cityId,
+            Guid cityId,
             string bio,
             string? photoUrl,
             int yearsOfExperience)
@@ -161,7 +161,7 @@ namespace Voyara.Domain.Entities.Guides
             if (userId == Guid.Empty)
                 throw new ArgumentException("A user is required.", nameof(userId));
 
-            if (cityId <= 0)
+            if (cityId == Guid.Empty)
                 throw new ArgumentException("A city is required.", nameof(cityId));
 
             ValidateDetails(bio, photoUrl, yearsOfExperience);

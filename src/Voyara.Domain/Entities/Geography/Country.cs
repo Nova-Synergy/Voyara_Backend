@@ -15,7 +15,7 @@ namespace Voyara.Domain.Entities.Geography
         /// <summary>
         /// Gets the ISO 3166-1 alpha-2 country code, for example EG.
         /// </summary>
-        public string IsoCode { get; private set; } = string.Empty;
+        public string IsCode { get; private set; } = string.Empty;
 
         /// <summary>
         /// Gets the ISO 4217 currency code used by default, for example EGP.
@@ -50,10 +50,9 @@ namespace Voyara.Domain.Entities.Geography
         public static Country Create(string isoCode, string defaultCurrency, string timeZone)
             => new()
             {
-                IsoCode = NormalizeCode(isoCode, 2, nameof(isoCode)),
-                DefaultCurrency = NormalizeCode(defaultCurrency, 3, nameof(defaultCurrency)),
-                TimeZone = NormalizeTimeZone(timeZone),
-                IsActive = true
+                IsCode = NormalizeLetters(isoCode, 2, nameof(isoCode)),
+                DefaultCurrency = NormalizeLetters(defaultCurrency, 3, nameof(defaultCurrency)),
+                TimeZone = NormalizeTimeZone(timeZone)
             };
 
         /// <summary>Changes the default currency and the time zone. The ISO code never changes.</summary>

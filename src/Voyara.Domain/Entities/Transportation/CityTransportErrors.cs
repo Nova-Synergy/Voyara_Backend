@@ -5,9 +5,9 @@ namespace Voyara.Domain.Entities.Transportation;
 /// <summary>Domain errors raised by the <see cref="CityTransport"/> aggregate and its parts.</summary>
 public static class CityTransportErrors
 {
-    /// <summary>The city identifier is not a positive number.</summary>
+    /// <summary>The city identifier is empty or invalid.</summary>
     public static readonly Error InvalidCityId = Error.Validation(
-        "CityTransport.InvalidCityId", "City id must be a positive number.");
+        "CityTransport.InvalidCityId", "City id must be a valid non-empty GUID.");
 
     /// <summary>The transport type identifier is not a positive number.</summary>
     public static readonly Error InvalidTransportTypeId = Error.Validation(
