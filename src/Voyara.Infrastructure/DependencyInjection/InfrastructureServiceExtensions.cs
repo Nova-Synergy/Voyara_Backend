@@ -23,6 +23,8 @@ using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
 using Voyara.Domain.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
+using Voyara.Domain.Repositories.Localization;
+using Voyara.Infrastructure.Persistence.Repositories.Localization;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -32,6 +34,7 @@ public static class InfrastructureServiceExtensions
     /// <summary>Registers persistence, caching, adapters, decorators and outbox services.</summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<ILanguageRepository, LanguageRepository>();
         services.AddOptions<DatabaseOptions>().Bind(configuration.GetSection(DatabaseOptions.SectionName));
         services.AddOptions<RedisOptions>().Bind(configuration.GetSection(RedisOptions.SectionName));
         services.AddOptions<FileStorageOptions>().Bind(configuration.GetSection(FileStorageOptions.SectionName));
@@ -49,6 +52,7 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDestinationRepository, DestinationRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
@@ -86,6 +90,9 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<ICityTransportRepository, CityTransportRepository>();
         services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
+
+        services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
         return services;
     }
