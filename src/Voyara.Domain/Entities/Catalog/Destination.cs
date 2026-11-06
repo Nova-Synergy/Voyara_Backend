@@ -143,9 +143,19 @@ namespace Voyara.Domain.Entities.Catalog
             return destination;
         }
 
+        /// <summary>
+        /// Convenience factory method to construct a draft destination from name, description, and location.
+        /// </summary>
+        public static Destination Create(string name, string? description, GeoPoint location)
+            => Create(location, Guid.NewGuid(), Guid.NewGuid(), 60, "en", name, description, null);
+
         // ------------------------------------------------------------------ lifecycle
 
         /// <summary>Makes a draft destination publicly visible.</summary>
+        /// <exception cref="InvalidOperationException">The destination is not a draft.</exception>
+        public void Publish() => Publish(DateTimeOffset.UtcNow);
+
+        /// <summary>Makes a draft destination publicly visible at the specified timestamp.</summary>
         /// <exception cref="InvalidOperationException">The destination is not a draft.</exception>
         public void Publish(DateTimeOffset now)
         {

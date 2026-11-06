@@ -19,7 +19,7 @@ public sealed class CityTransportRepository : ICityTransportRepository
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
     /// <inheritdoc />
-    public Task<bool> ExistsAsync(int cityId, int transportTypeId, CancellationToken cancellationToken = default)
+    public Task<bool> ExistsAsync(Guid cityId, int transportTypeId, CancellationToken cancellationToken = default)
         => _context.CityTransports
             .AnyAsync(c => c.CityId == cityId && c.TransportTypeId == transportTypeId, cancellationToken);
 

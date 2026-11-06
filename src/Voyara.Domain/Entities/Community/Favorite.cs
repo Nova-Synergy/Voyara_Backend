@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using Voyara.Domain.Events;
 using Voyara.Domain.Events.Community;
 using Voyara.SharedKernel.Entities;
 using Voyara.SharedKernel.Results;
@@ -70,8 +71,14 @@ public sealed class Favorite : AggregateRoot
 
         var favorite = new Favorite(userId, destinationId);
 
-        favorite.RaiseDomainEvent(new FavoriteAddedDomainEvent(
-            Guid.NewGuid(), DateTimeOffset.UtcNow, favorite.Id, userId, destinationId));
+        favorite.RaiseDomainEvent(
+            new FavoriteAddedDomainEvent(
+            Guid.NewGuid(), 
+            DateTimeOffset.UtcNow, 
+            favorite.Id,
+            userId,
+            destinationId)
+            );
 
         return favorite;
     }

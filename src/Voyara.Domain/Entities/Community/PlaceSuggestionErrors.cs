@@ -7,7 +7,7 @@ namespace Voyara.Domain.Entities.Community;
 public static class PlaceSuggestionErrors
 {
     public static readonly Error UserRequired =
-        Error.Validation("PlaceSuggestion.UserRequired", "The submitting user is required.");
+        Error.Validation("PlaceSuggestion.UserRequired", "The submit user is required.");
 
     public static readonly Error NameRequired =
         Error.Validation("PlaceSuggestion.NameRequired", "Place name is required.");

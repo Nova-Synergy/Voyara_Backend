@@ -3,6 +3,7 @@ using Voyara.Domain.Events.Community;
 using Voyara.SharedKernel.Entities;
 using Voyara.SharedKernel.Results;
 
+
 namespace Voyara.Domain.Entities.Community;
 
 /// <summary>
@@ -119,7 +120,7 @@ public sealed class Review : AggregateRoot
     }
 
     /// <summary>Approves a pending review or clears a report on an approved review.</summary>
-    public Result Approve(Guid adminId)
+    public Result Approve(Guid adminId, int rating)
     {
         if (adminId == Guid.Empty)
             return Result.Failure(ReviewErrors.AdminRequired);
@@ -131,8 +132,7 @@ public sealed class Review : AggregateRoot
         RejectionReason = null;
         ModeratedAt = DateTimeOffset.UtcNow;
 
-        RaiseDomainEvent(new ReviewApprovedDomainEvent(
-            Guid.NewGuid(), ModeratedAt.Value, Id, UserId, DestinationId, adminId));
+        RaiseDomainEvent(new ReviewApprovedDomainEvent(Guid.NewGuid(), ModeratedAt.Value, Id, UserId, DestinationId, adminId, rating));
 
         return Result.Success();
     }
@@ -180,7 +180,7 @@ public sealed class Review : AggregateRoot
     }
 
     /// <summary>Hides an approved or reported review from public view.</summary>
-    public Result Hide(Guid adminId)
+    public Result Hide(Guid adminId, int rating)
     {
         if (adminId == Guid.Empty)
             return Result.Failure(ReviewErrors.AdminRequired);
@@ -192,7 +192,7 @@ public sealed class Review : AggregateRoot
         ModeratedAt = DateTimeOffset.UtcNow;
 
         RaiseDomainEvent(new ReviewHiddenDomainEvent(
-            Guid.NewGuid(), ModeratedAt.Value, Id, UserId, adminId));
+            Guid.NewGuid(), ModeratedAt.Value, Id, UserId,DestinationId ,adminId, rating));
 
         return Result.Success();
     }

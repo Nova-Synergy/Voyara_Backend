@@ -1,4 +1,5 @@
-﻿using Voyara.Domain.Entities.Identity;
+﻿
+using Voyara.Domain.Entities.Identity;
 using Voyara.Domain.Enums;
 using Voyara.SharedKernel.Entities;
 

@@ -1,4 +1,4 @@
-﻿using Voyara.Domain.Entities.CostEstimation;
+using Voyara.Domain.Entities.CostEstimation;
 using Voyara.Domain.Enums;
 using Voyara.Domain.ValueObjects;
 using Voyara.SharedKernel.Entities;
@@ -102,7 +102,7 @@ public sealed class Journey : AggregateRoot
     public JourneyItem AddItem(
         int dayNumber,
         Guid destinationId,
-        int? cityId = null,
+        Guid? cityId = null,
         TimeSpan? startTime = null,
         TimeSpan? endTime = null,
         TransportMode transport = TransportMode.Walking)

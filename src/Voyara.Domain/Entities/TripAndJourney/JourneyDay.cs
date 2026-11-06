@@ -1,4 +1,4 @@
-﻿using Voyara.Domain.Enums;
+using Voyara.Domain.Enums;
 using Voyara.SharedKernel.Entities;
 
 namespace Voyara.Domain.Entities.TripAndJourney;
@@ -69,7 +69,7 @@ public sealed class JourneyDay : BaseEntity
     /// <returns>The newly created and added <see cref="JourneyItem"/>.</returns>
     public JourneyItem AddItem(
         Guid destinationId,
-        int? cityId = null,
+        Guid? cityId = null,
         TimeSpan? startTime = null,
         TimeSpan? endTime = null,
         TransportMode transport = TransportMode.Walking)

@@ -8,7 +8,7 @@ namespace Voyara.Domain.Entities.Identity
     /// </summary>
     public sealed class User : AuditableEntity
     {
-        private const int MaxFullNameLength = 200;
+        private const int MaxFullNameLength = 300;
 
         private readonly List<RefreshToken> _refreshTokens = [];
         private readonly List<Role> _roles = [];
