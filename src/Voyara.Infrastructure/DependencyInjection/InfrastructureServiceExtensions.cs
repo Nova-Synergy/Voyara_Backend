@@ -24,6 +24,9 @@ using Voyara.Infrastructure.Recommendations;
 using Voyara.Domain.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 
+using Voyara.Domain.Repositories.TripAndJourney;
+using Voyara.Infrastructure.Persistence.Repositories.TripAndJourney;
+
 namespace Voyara.Infrastructure.DependencyInjection;
 
 /// <summary>Composition root for the Infrastructure layer.</summary>
@@ -86,6 +89,7 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<ICityTransportRepository, CityTransportRepository>();
         services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
+        services.AddScoped<IJourneyRepository, JourneyRepository>();
 
         return services;
     }
