@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
 using Voyara.Application.Planning.Commands.GenerateJourney;
 using Voyara.Application.Planning.Queries.GetJourneyById;
+using Voyara.Application.Planning.Queries.ValidateJourney;
 
 namespace Voyara.Api.Controllers.Planning;
 
@@ -19,6 +20,15 @@ public sealed class JourneysController : BaseApiController
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new GetJourneyByIdQuery(id), cancellationToken));
+
+    /// <summary>
+    /// Validates business invariants, daily capacity, and scheduling feasibility for a journey.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey to validate.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/validate")]
+    public async Task<IActionResult> Validate(Guid id, CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new ValidateJourneyQuery(id), cancellationToken));
 
     /// <summary>
     /// Generates a new AI-synthesized journey itinerary from travel requirements.

@@ -3,6 +3,7 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Voyara.Application.Behaviors;
+using Voyara.Application.Planning.Services;
 
 namespace Voyara.Application.DependencyInjection;
 
@@ -31,6 +32,8 @@ public static class ApplicationServiceExtensions
         typeAdapterConfig.Scan(typeof(ApplicationServiceExtensions).Assembly);
         services.AddSingleton(typeAdapterConfig);
         services.AddMapster();
+
+        services.AddScoped<IJourneyConstraintValidator, JourneyConstraintValidator>();
 
         return services;
     }
