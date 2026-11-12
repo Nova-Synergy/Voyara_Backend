@@ -6,14 +6,11 @@ public sealed class LocalRuleTranslation : BaseEntity
 {
     public Guid LocalRuleId { get; private set; }
 
-    public string LanguageCode { get; private set; }
-        = string.Empty;
+    public string LanguageCode { get; private set; } = string.Empty;
 
-    public string Title { get; private set; }
-        = string.Empty;
+    public string Title { get; private set; } = string.Empty;
 
-    public string Content { get; private set; }
-        = string.Empty;
+    public string Content { get; private set; } = string.Empty;
 
     private LocalRuleTranslation()
     {
@@ -38,25 +35,48 @@ public sealed class LocalRuleTranslation : BaseEntity
         string content)
     {
         if (localRuleId == Guid.Empty)
+        {
             throw new ArgumentException(
-                "LocalRuleId cannot be empty.");
+                "LocalRuleId cannot be empty.",
+                nameof(localRuleId));
+        }
 
-        if (string.IsNullOrWhiteSpace(languageCode))
-            throw new ArgumentException(
-                "Language code is required.");
-
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException(
-                "Title is required.");
-
-        if (string.IsNullOrWhiteSpace(content))
-            throw new ArgumentException(
-                "Content is required.");
+        ArgumentException.ThrowIfNullOrWhiteSpace(languageCode);
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        ArgumentException.ThrowIfNullOrWhiteSpace(content);
 
         return new LocalRuleTranslation(
             localRuleId,
-            languageCode.Trim(),
+            ValidateLanguageCode(languageCode),
             title.Trim(),
             content.Trim());
+    }
+
+    public void Update(string languageCode, string title, string content)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(languageCode);
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        ArgumentException.ThrowIfNullOrWhiteSpace(content);
+
+        LanguageCode = ValidateLanguageCode(languageCode);
+        Title = title.Trim();
+        Content = content.Trim();
+    }
+
+    private static string ValidateLanguageCode(string languageCode)
+    {
+        var normalizedCode = languageCode.Trim().ToLowerInvariant();
+
+        if (normalizedCode.Length is < 2 or > 10 ||
+            normalizedCode.Split('-').Any(part =>
+                part.Length is < 2 or > 8 ||
+                part.Any(c => !char.IsAsciiLetterOrDigit(c))))
+        {
+            throw new ArgumentException(
+                "Invalid language code.",
+                nameof(languageCode));
+        }
+
+        return normalizedCode;
     }
 }

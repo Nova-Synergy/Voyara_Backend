@@ -1,38 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Voyara.Domain.Entities.Catalog;
 using Voyara.Domain.Entities.Transportation;
 
-namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
+namespace Voyara.Infrastructure.Persistence.Configurations.Transportation;
+
+/// <summary>
+/// Mapping for <see cref="DestinationTransport"/>, a value object owned by the CityTransport aggregate.
+/// It is applied from <see cref="CityTransportConfiguration"/>.
+/// </summary>
+internal static class DestinationTransportConfiguration
 {
-    /// <summary>
-    /// EF Core Fluent API mapping for the <see cref="DestinationTransport"/> join entity.
-    /// </summary>
-    /// <remarks>
-    /// <see cref="DestinationTransport.DestinationId"/> references the <c>Destination</c> <c>«ref»</c> from another
-    /// module, so it is mapped as a plain indexed column without a foreign key constraint.
-    /// </remarks>
-    public class DestinationTransportConfiguration : IEntityTypeConfiguration<DestinationTransport>
+    /// <summary>Configures the owned destination link table.</summary>
+    public static void Configure(OwnedNavigationBuilder<CityTransport, DestinationTransport> builder)
     {
-        /// <inheritdoc />
-        public void Configure(EntityTypeBuilder<DestinationTransport> builder)
-        {
-            builder.ToTable("DestinationTransports");
+        builder.ToTable("destination_transports");
+        builder.WithOwner().HasForeignKey("CityTransportId");
 
-            // Composite key prevents linking the same destination to the same transport twice.
-            builder.HasKey(x => new { x.DestinationId, x.CityTransportId });
+        // A destination can be linked to a city transport only once.
+        builder.HasKey("CityTransportId", nameof(DestinationTransport.DestinationId));
+        builder.Property(d => d.DestinationId).ValueGeneratedNever();
 
-            builder.HasOne(x => x.CityTransport)
-                   .WithMany(c => c.Destinations)
-                   .HasForeignKey(x => x.CityTransportId)
-                   .OnDelete(DeleteBehavior.Cascade);
+        // Reference to the Destination aggregate by Id (foreign key, no navigation property).
+        builder.HasOne<Destination>()
+            .WithMany()
+            .HasForeignKey(d => d.DestinationId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            // Supports "which transports reach this destination" queries.
-            builder.HasIndex(x => x.DestinationId);
-        }
+        // Supports "which transports reach this destination" queries.
+        builder.HasIndex(d => d.DestinationId);
     }
 }

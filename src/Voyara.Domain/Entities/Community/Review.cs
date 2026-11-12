@@ -132,7 +132,7 @@ public sealed class Review : AggregateRoot
         ModeratedAt = DateTimeOffset.UtcNow;
 
         RaiseDomainEvent(new ReviewApprovedDomainEvent(
-            Guid.NewGuid(), ModeratedAt.Value, Id, UserId, DestinationId, adminId));
+            Guid.NewGuid(), ModeratedAt.Value, Id, UserId, DestinationId, adminId, Rating));
 
         return Result.Success();
     }
@@ -192,7 +192,7 @@ public sealed class Review : AggregateRoot
         ModeratedAt = DateTimeOffset.UtcNow;
 
         RaiseDomainEvent(new ReviewHiddenDomainEvent(
-            Guid.NewGuid(), ModeratedAt.Value, Id, UserId, adminId));
+            Guid.NewGuid(), ModeratedAt.Value, Id, UserId, DestinationId, adminId, Rating));
 
         return Result.Success();
     }

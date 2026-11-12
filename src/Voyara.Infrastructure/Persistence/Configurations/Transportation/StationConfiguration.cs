@@ -1,36 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NetTopologySuite.Geometries;
 using Voyara.Domain.Entities.Transportation;
+using Voyara.Domain.ValueObjects;
 
-namespace Voyara.Infrastructure.Persistence.Configurations.Transportation
+namespace Voyara.Infrastructure.Persistence.Configurations.Transportation;
+
+/// <summary>
+/// Mapping for <see cref="Station"/>, an entity owned by <see cref="TransportRoute"/>.
+/// It is applied from <see cref="TransportRouteConfiguration"/>.
+/// </summary>
+internal static class StationConfiguration
 {
-    /// <summary>
-    /// EF Core Fluent API mapping for <see cref="Station"/>.
-    /// </summary>
-    public class StationConfiguration : IEntityTypeConfiguration<Station>
+    /// <summary>Configures the owned station table.</summary>
+    public static void Configure(OwnedNavigationBuilder<TransportRoute, Station> builder)
     {
-        /// <inheritdoc />
-        public void Configure(EntityTypeBuilder<Station> builder)
-        {
-            builder.ToTable("Stations");
+        builder.ToTable("stations");
+        builder.WithOwner().HasForeignKey("TransportRouteId");
 
-            builder.HasKey(x => x.Id);
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
 
-            builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
+        builder.Property(s => s.Name).HasMaxLength(Station.MaxNameLength).IsRequired();
 
-            // GeoPoint is a value object: map it as an owned type into the Stations table.
-            builder.OwnsOne(x => x.Location, location =>
-            {
-                location.Property(p => p.Latitude).HasColumnName("Latitude").IsRequired();
-                location.Property(p => p.Longitude).HasColumnName("Longitude").IsRequired();
-            });
-            builder.Navigation(x => x.Location).IsRequired();
-        }
+        // Same GeoPoint-to-Point conversion as Destination.Location.
+        builder.Property(s => s.Location)
+            .HasConversion(
+                geoPoint => new Point(geoPoint.Longitude, geoPoint.Latitude) { SRID = 4326 },
+                point => GeoPoint.Create(point.Y, point.X).Value)
+            .HasColumnType("geometry(Point,4326)")
+            .IsRequired();
     }
-
 }

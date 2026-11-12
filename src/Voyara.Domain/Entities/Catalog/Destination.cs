@@ -55,7 +55,7 @@ namespace Voyara.Domain.Entities.Catalog
         /// <summary>
         /// Gets the identifier of the city the destination is located in.
         /// </summary>
-        public Guid CityId { get; private set; }
+        public int CityId { get; private set; }
 
         /// <summary>
         /// Gets the city the destination is located in.
@@ -117,7 +117,7 @@ namespace Voyara.Domain.Entities.Catalog
         /// <exception cref="ArgumentException">An argument is missing or out of range.</exception>
         public static Destination Create(
             GeoPoint location,
-            Guid cityId,
+            int cityId,
             Guid categoryId,
             int estimatedVisitMinutes,
             string languageCode,
@@ -126,7 +126,7 @@ namespace Voyara.Domain.Entities.Catalog
             string? cultureNotes)
         {
             ArgumentNullException.ThrowIfNull(location);
-            EnsureId(cityId, nameof(cityId));
+            EnsureCityId(cityId);
             EnsureId(categoryId, nameof(categoryId));
             EnsureVisitMinutes(estimatedVisitMinutes);
 
@@ -177,10 +177,10 @@ namespace Voyara.Domain.Entities.Catalog
         }
 
         /// <summary>Places the destination in another city.</summary>
-        public void MoveToCity(Guid cityId)
+        public void MoveToCity(int cityId)
         {
             EnsureEditable();
-            EnsureId(cityId, nameof(cityId));
+            EnsureCityId(cityId);
             CityId = cityId;
         }
 
@@ -412,6 +412,12 @@ namespace Voyara.Domain.Entities.Catalog
         {
             if (Status == DestinationStatus.Archived)
                 throw new InvalidOperationException("An archived destination cannot be modified.");
+        }
+
+        private static void EnsureCityId(int cityId)
+        {
+            if (cityId <= 0)
+                throw new ArgumentException("Identifier is required.", nameof(cityId));
         }
 
         private static void EnsureId(Guid id, string parameterName)

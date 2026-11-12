@@ -17,17 +17,17 @@ public sealed class RuleScope : ValueObject
     /// <summary>The level the rule applies to.</summary>
     public ScopeType Type { get; private set; }
 
-    /// <summary>Identifier of the country, city or destination, as text.</summary>
-    public string Id { get; private set; } = string.Empty;
+    /// <summary>Identifier of the targeted country, city or destination, as text.</summary>
+    public string TargetId { get; private set; } = string.Empty;
 
     private RuleScope()
     {
     }
 
-    private RuleScope(ScopeType type, string id)
+    private RuleScope(ScopeType type, string targetId)
     {
         Type = type;
-        Id = id;
+        TargetId = targetId;
     }
 
     /// <summary>Creates a scope that targets a country.</summary>
@@ -51,7 +51,7 @@ public sealed class RuleScope : ValueObject
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Type;
-        yield return Id;
+        yield return TargetId;
     }
 
     private static Result<RuleScope> FromNumericId(ScopeType type, int id)
