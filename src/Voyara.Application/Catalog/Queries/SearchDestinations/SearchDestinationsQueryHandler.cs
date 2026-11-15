@@ -29,7 +29,10 @@ public sealed class SearchDestinationsQueryHandler
         var criteria = new DestinationSearchCriteria
         {
             Text = request.SearchTerm,
-            LanguageCode = request.Language
+            LanguageCode = request.Language,
+            CountryId = request.CountryId,
+            CityId = request.CityId,
+            CategoryId = request.CategoryId
         };
 
         var destinations = await _destinationRepository.SearchAsync(criteria, skip, pageSize, cancellationToken);

@@ -17,5 +17,17 @@ public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchD
             .MaximumLength(10)
             .Matches(LanguageCodePattern)
             .When(query => !string.IsNullOrWhiteSpace(query.LanguageCode));
+
+        RuleFor(query => query.CountryId)
+            .GreaterThan(0)
+            .When(query => query.CountryId.HasValue);
+
+        RuleFor(query => query.CityId)
+            .GreaterThan(0)
+            .When(query => query.CityId.HasValue);
+
+        RuleFor(query => query.CategoryId)
+            .NotEqual(Guid.Empty)
+            .When(query => query.CategoryId.HasValue);
     }
 }

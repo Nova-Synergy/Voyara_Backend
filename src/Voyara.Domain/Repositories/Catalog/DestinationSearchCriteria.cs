@@ -14,4 +14,13 @@ public sealed record DestinationSearchCriteria
 
     /// <summary>Language used to choose the display translation (falls back to English, then to any translation).</summary>
     public string LanguageCode { get; init; } = DefaultLanguageCode;
+
+    /// <summary>Restricts results to destinations of cities in this country; null means any country.</summary>
+    public int? CountryId { get; init; }
+
+    /// <summary>Restricts results to destinations in this city; null means any city.</summary>
+    public int? CityId { get; init; }
+
+    /// <summary>Restricts results to destinations of this category; null means any category.</summary>
+    public Guid? CategoryId { get; init; }
 }

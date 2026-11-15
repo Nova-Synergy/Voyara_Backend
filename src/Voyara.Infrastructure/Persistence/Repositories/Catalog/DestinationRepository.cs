@@ -79,6 +79,22 @@ public sealed class DestinationRepository : IDestinationRepository
                     && EF.Functions.ILike(translation.Description, pattern, LikeEscapeCharacter))));
         }
 
+        // Location and category filters combine with AND (a city outside the requested country yields no results).
+        if (criteria.CountryId is { } countryId)
+        {
+            query = query.Where(destination => destination.City.CountryId == countryId);
+        }
+
+        if (criteria.CityId is { } cityId)
+        {
+            query = query.Where(destination => destination.CityId == cityId);
+        }
+
+        if (criteria.CategoryId is { } categoryId)
+        {
+            query = query.Where(destination => destination.CategoryId == categoryId);
+        }
+
         return query;
     }
 
