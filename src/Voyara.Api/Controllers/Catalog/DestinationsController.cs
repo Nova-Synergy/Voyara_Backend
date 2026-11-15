@@ -10,16 +10,24 @@ namespace Voyara.Api.Controllers.Catalog;
 [Route("api/v1/[controller]")]
 public sealed class DestinationsController : BaseApiController
 {
-    /// <summary>Searches destinations with paging.</summary>
+    /// <summary>Searches published destinations by free text, country, city and category.</summary>
+    /// <param name="request">Search parameters taken from the query string.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet]
     public async Task<IActionResult> Search(
-        [FromQuery] string? searchTerm,
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10,
-        CancellationToken cancellationToken = default)
-        => HandleResult(await Sender.Send(new SearchDestinationsQuery(searchTerm, page, pageSize), cancellationToken));
+        [FromQuery] SearchDestinationsRequest request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new SearchDestinationsQuery(
+                request.SearchTerm,
+                request.Lang,
+                request.CountryId,
+                request.CityId,
+                request.CategoryId,
+                request.Page,
+                request.PageSize),
+            cancellationToken));
 
-    /// <summary>Gets a single destination by identifier.</summary>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new GetDestinationByIdQuery(id), cancellationToken));
