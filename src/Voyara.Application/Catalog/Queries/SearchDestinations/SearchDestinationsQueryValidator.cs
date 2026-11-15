@@ -5,6 +5,12 @@ namespace Voyara.Application.Catalog.Queries.SearchDestinations;
 /// <summary>Validates destination search requests.</summary>
 public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchDestinationsQuery>
 {
+    /// <summary>Largest allowed page size.</summary>
+    public const int MaxPageSize = 100;
+
+    /// <summary>Largest allowed page number; keeps the row offset far from integer overflow.</summary>
+    public const int MaxPage = 10_000;
+
     private const string LanguageCodePattern = "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$";
 
     /// <summary>Creates the validator.</summary>
@@ -47,6 +53,19 @@ public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchD
             .Matches("^[a-zA-Z]{3}$")
             .WithMessage("Currency must be a 3-letter ISO 4217 code.")
             .When(query => !string.IsNullOrWhiteSpace(query.Currency));
+
+        RuleFor(query => query.Page)
+            .InclusiveBetween(1, MaxPage);
+
+        RuleFor(query => query.PageSize)
+            .InclusiveBetween(1, MaxPageSize);
+
+        RuleFor(query => query.SortBy)
+            .IsInEnum();
+
+        RuleFor(query => query.SortDirection)
+            .IsInEnum()
+            .When(query => query.SortDirection.HasValue);
 
         RuleFor(query => query.MaxPrice)
             .NotNull()

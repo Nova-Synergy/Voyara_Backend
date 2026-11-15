@@ -1,3 +1,5 @@
+using Voyara.Domain.Enums;
+
 namespace Voyara.Api.Contracts.Catalog;
 
 /// <summary>Query-string parameters of the destination search endpoint.</summary>
@@ -27,9 +29,15 @@ public sealed record SearchDestinationsRequest
     /// <summary>ISO 4217 currency code of <see cref="MaxPrice"/> (for example EGP); required with a price limit.</summary>
     public string? Currency { get; init; }
 
+    /// <summary>Sort key: Popularity (default), Rating, Name or Newest.</summary>
+    public DestinationSortBy SortBy { get; init; } = DestinationSortBy.Popularity;
+
+    /// <summary>Ascending or Descending; omitted uses the natural direction of the sort key.</summary>
+    public SortDirection? SortDirection { get; init; }
+
     /// <summary>One-based page number.</summary>
     public int Page { get; init; } = 1;
 
-    /// <summary>Items per page.</summary>
+    /// <summary>Items per page (1 to 100).</summary>
     public int PageSize { get; init; } = 10;
 }

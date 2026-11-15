@@ -1,3 +1,5 @@
+using Voyara.Domain.Enums;
+
 namespace Voyara.Domain.Repositories.Catalog;
 
 /// <summary>
@@ -36,4 +38,13 @@ public sealed record DestinationSearchCriteria
 
     /// <summary>ISO 4217 currency code (upper-case) that <see cref="MaxPrice"/> is expressed in.</summary>
     public string? Currency { get; init; }
+
+    /// <summary>Sort key; popularity by default.</summary>
+    public DestinationSortBy SortBy { get; init; } = DestinationSortBy.Popularity;
+
+    /// <summary>
+    /// Sort direction; null uses the natural direction of <see cref="SortBy"/>
+    /// (descending for popularity, rating and newest; ascending for name).
+    /// </summary>
+    public SortDirection? SortDirection { get; init; }
 }

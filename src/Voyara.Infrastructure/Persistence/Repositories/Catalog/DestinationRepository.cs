@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Voyara.Domain.Entities.Catalog;
 using Voyara.Domain.Enums;
@@ -33,11 +34,9 @@ public sealed class DestinationRepository : IDestinationRepository
         int take,
         CancellationToken cancellationToken = default)
     {
-        return await ApplyCriteria(_context.Destinations.AsNoTracking(), criteria)
+        return await ApplyOrdering(ApplyCriteria(_context.Destinations.AsNoTracking(), criteria), criteria)
             .Include(destination => destination.Translations)
             .Include(destination => destination.Images)
-            .OrderByDescending(destination => destination.PopularityScore)
-            .ThenBy(destination => destination.Id)
             .Skip(skip)
             .Take(take)
             .AsSplitQuery()
@@ -108,6 +107,47 @@ public sealed class DestinationRepository : IDestinationRepository
 
         return query;
     }
+
+    /// <summary>
+    /// Orders the results by the requested key. The identifier is always the last tie-breaker so the order is
+    /// deterministic and consecutive pages never repeat or skip an item.
+    /// </summary>
+    private static IOrderedQueryable<Destination> ApplyOrdering(
+        IQueryable<Destination> query,
+        DestinationSearchCriteria criteria)
+    {
+        var descending = criteria.SortDirection is { } direction
+            ? direction == SortDirection.Descending
+            : criteria.SortBy != DestinationSortBy.Name;
+
+        IOrderedQueryable<Destination> ordered = criteria.SortBy switch
+        {
+            DestinationSortBy.Rating => descending
+                ? query.OrderByDescending(destination => destination.AverageRating)
+                    .ThenByDescending(destination => destination.ReviewCount)
+                : query.OrderBy(destination => destination.AverageRating)
+                    .ThenBy(destination => destination.ReviewCount),
+            DestinationSortBy.Name => descending
+                ? query.OrderByDescending(DisplayName(criteria.LanguageCode))
+                : query.OrderBy(DisplayName(criteria.LanguageCode)),
+            DestinationSortBy.Newest => descending
+                ? query.OrderByDescending(destination => destination.CreatedAt)
+                : query.OrderBy(destination => destination.CreatedAt),
+            _ => descending
+                ? query.OrderByDescending(destination => destination.PopularityScore)
+                : query.OrderBy(destination => destination.PopularityScore)
+        };
+
+        return ordered.ThenBy(destination => destination.Id);
+    }
+
+    /// <summary>Name shown for the requested language, falling back to English and then to any translation.</summary>
+    private static Expression<Func<Destination, string?>> DisplayName(string languageCode)
+        => destination =>
+            destination.Translations.Where(t => t.LanguageCode == languageCode).Select(t => t.Name).FirstOrDefault()
+            ?? destination.Translations.Where(t => t.LanguageCode == DestinationSearchCriteria.DefaultLanguageCode)
+                .Select(t => t.Name).FirstOrDefault()
+            ?? destination.Translations.OrderBy(t => t.LanguageCode).Select(t => t.Name).FirstOrDefault();
 
     private static string EscapeLikePattern(string value)
         => value
