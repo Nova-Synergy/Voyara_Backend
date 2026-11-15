@@ -32,7 +32,10 @@ public sealed class SearchDestinationsQueryHandler
             LanguageCode = request.Language,
             CountryId = request.CountryId,
             CityId = request.CityId,
-            CategoryId = request.CategoryId
+            CategoryId = request.CategoryId,
+            MinRating = request.MinRating,
+            MaxPrice = request.MaxPrice,
+            Currency = request.NormalizedCurrency
         };
 
         var destinations = await _destinationRepository.SearchAsync(criteria, skip, pageSize, cancellationToken);

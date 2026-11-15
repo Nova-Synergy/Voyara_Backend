@@ -13,6 +13,9 @@ namespace Voyara.Application.Catalog.Queries.SearchDestinations;
 /// <param name="CountryId">Only destinations of cities in this country; null means any country.</param>
 /// <param name="CityId">Only destinations in this city; null means any city.</param>
 /// <param name="CategoryId">Only destinations of this category; null means any category.</param>
+/// <param name="MinRating">Minimum average rating (0 to 5); null means no rating filter.</param>
+/// <param name="MaxPrice">Maximum ticket price in <paramref name="Currency"/>; null means no price filter.</param>
+/// <param name="Currency">ISO 4217 code of <paramref name="MaxPrice"/>; required when a price limit is given.</param>
 /// <param name="Page">One-based page number.</param>
 /// <param name="PageSize">Items per page.</param>
 public sealed record SearchDestinationsQuery(
@@ -21,6 +24,9 @@ public sealed record SearchDestinationsQuery(
     int? CountryId,
     int? CityId,
     Guid? CategoryId,
+    double? MinRating,
+    decimal? MaxPrice,
+    string? Currency,
     int Page,
     int PageSize)
     : ICachedQuery<PagedResult<DestinationSummaryResponse>>
@@ -30,10 +36,14 @@ public sealed record SearchDestinationsQuery(
         ? DestinationSearchCriteria.DefaultLanguageCode
         : LanguageCode.Trim().ToLowerInvariant();
 
+    /// <summary>Normalized currency code (upper-case); null when none was supplied.</summary>
+    public string? NormalizedCurrency => string.IsNullOrWhiteSpace(Currency) ? null : Currency.Trim().ToUpperInvariant();
+
     /// <inheritdoc />
     public string CacheKey =>
         $"destinations:search:{Language}:{Uri.EscapeDataString(SearchTerm?.Trim().ToLowerInvariant() ?? string.Empty)}"
-        + $":country={CountryId}:city={CityId}:category={CategoryId}:{Page}:{PageSize}";
+        + $":country={CountryId}:city={CityId}:category={CategoryId}"
+        + $":rating={MinRating}:price={MaxPrice}{NormalizedCurrency}:{Page}:{PageSize}";
 
     /// <inheritdoc />
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);

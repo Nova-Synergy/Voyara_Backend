@@ -23,4 +23,17 @@ public sealed record DestinationSearchCriteria
 
     /// <summary>Restricts results to destinations of this category; null means any category.</summary>
     public Guid? CategoryId { get; init; }
+
+    /// <summary>Minimum average rating (0 to 5, inclusive); null means no rating filter.</summary>
+    public double? MinRating { get; init; }
+
+    /// <summary>
+    /// Maximum ticket price, in <see cref="Currency"/>. A destination matches when at least one of its ticket
+    /// prices in that currency is at or below the limit; destinations without a price in that currency do not match.
+    /// Null means no price filter.
+    /// </summary>
+    public decimal? MaxPrice { get; init; }
+
+    /// <summary>ISO 4217 currency code (upper-case) that <see cref="MaxPrice"/> is expressed in.</summary>
+    public string? Currency { get; init; }
 }

@@ -10,7 +10,7 @@ namespace Voyara.Api.Controllers.Catalog;
 [Route("api/v1/[controller]")]
 public sealed class DestinationsController : BaseApiController
 {
-    /// <summary>Searches published destinations by free text, country, city and category.</summary>
+    /// <summary>Searches published destinations by free text, location, category, rating and price.</summary>
     /// <param name="request">Search parameters taken from the query string.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet]
@@ -24,6 +24,9 @@ public sealed class DestinationsController : BaseApiController
                 request.CountryId,
                 request.CityId,
                 request.CategoryId,
+                request.MinRating,
+                request.MaxPrice,
+                request.Currency,
                 request.Page,
                 request.PageSize),
             cancellationToken));

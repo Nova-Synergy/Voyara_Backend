@@ -18,6 +18,15 @@ public sealed record SearchDestinationsRequest
     /// <summary>Only destinations of this category.</summary>
     public Guid? CategoryId { get; init; }
 
+    /// <summary>Minimum average rating (0 to 5).</summary>
+    public double? MinRating { get; init; }
+
+    /// <summary>Maximum ticket price, expressed in <see cref="Currency"/>.</summary>
+    public decimal? MaxPrice { get; init; }
+
+    /// <summary>ISO 4217 currency code of <see cref="MaxPrice"/> (for example EGP); required with a price limit.</summary>
+    public string? Currency { get; init; }
+
     /// <summary>One-based page number.</summary>
     public int Page { get; init; } = 1;
 

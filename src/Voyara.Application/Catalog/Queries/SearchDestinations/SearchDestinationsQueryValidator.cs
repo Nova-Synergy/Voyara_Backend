@@ -29,5 +29,28 @@ public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchD
         RuleFor(query => query.CategoryId)
             .NotEqual(Guid.Empty)
             .When(query => query.CategoryId.HasValue);
+
+        RuleFor(query => query.MinRating)
+            .InclusiveBetween(0d, 5d)
+            .When(query => query.MinRating.HasValue);
+
+        RuleFor(query => query.MaxPrice)
+            .GreaterThanOrEqualTo(0m)
+            .When(query => query.MaxPrice.HasValue);
+
+        RuleFor(query => query.Currency)
+            .NotEmpty()
+            .WithMessage("A currency is required when a maximum price is given.")
+            .When(query => query.MaxPrice.HasValue);
+
+        RuleFor(query => query.Currency)
+            .Matches("^[a-zA-Z]{3}$")
+            .WithMessage("Currency must be a 3-letter ISO 4217 code.")
+            .When(query => !string.IsNullOrWhiteSpace(query.Currency));
+
+        RuleFor(query => query.MaxPrice)
+            .NotNull()
+            .WithMessage("A maximum price is required when a currency is given.")
+            .When(query => !string.IsNullOrWhiteSpace(query.Currency));
     }
 }

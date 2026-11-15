@@ -95,6 +95,17 @@ public sealed class DestinationRepository : IDestinationRepository
             query = query.Where(destination => destination.CategoryId == categoryId);
         }
 
+        if (criteria.MinRating is { } minRating)
+        {
+            query = query.Where(destination => destination.AverageRating >= minRating);
+        }
+
+        if (criteria is { MaxPrice: { } maxPrice, Currency: { } currency })
+        {
+            query = query.Where(destination => destination.TicketPrices.Any(ticket =>
+                ticket.Price.Currency == currency && ticket.Price.Amount <= maxPrice));
+        }
+
         return query;
     }
 
