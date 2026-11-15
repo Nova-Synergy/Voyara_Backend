@@ -1,6 +1,4 @@
-using MapsterMapper;
 using MediatR;
-using Voyara.Application.Abstractions;
 using Voyara.Application.DTOs;
 using Voyara.Domain.Repositories.Catalog;
 using Voyara.SharedKernel.Results;
@@ -9,20 +7,18 @@ namespace Voyara.Application.Catalog.Queries.SearchDestinations;
 
 /// <summary>Handles destination searches.</summary>
 public sealed class SearchDestinationsQueryHandler
-    : IRequestHandler<SearchDestinationsQuery, Result<PagedResult<DestinationResponse>>>
+    : IRequestHandler<SearchDestinationsQuery, Result<PagedResult<DestinationSummaryResponse>>>
 {
     private readonly IDestinationRepository _destinationRepository;
-    private readonly IMapper _mapper;
 
     /// <summary>Creates the handler.</summary>
-    public SearchDestinationsQueryHandler(IDestinationRepository destinationRepository, IMapper mapper)
+    public SearchDestinationsQueryHandler(IDestinationRepository destinationRepository)
     {
         _destinationRepository = destinationRepository;
-        _mapper = mapper;
     }
 
     /// <inheritdoc />
-    public async Task<Result<PagedResult<DestinationResponse>>> Handle(
+    public async Task<Result<PagedResult<DestinationSummaryResponse>>> Handle(
         SearchDestinationsQuery request,
         CancellationToken cancellationToken)
     {
@@ -30,15 +26,25 @@ public sealed class SearchDestinationsQueryHandler
         var pageSize = Math.Clamp(request.PageSize, 1, 100);
         var skip = (page - 1) * pageSize;
 
-        var destinations = await _destinationRepository.SearchAsync(
-            request.SearchTerm, null, skip, pageSize, cancellationToken);
-        var totalCount = await _destinationRepository.CountAsync(
-            request.SearchTerm, null, cancellationToken);
+        var criteria = new DestinationSearchCriteria
+        {
+            Text = request.SearchTerm,
+            LanguageCode = request.Language,
+            CountryId = request.CountryId,
+            CityId = request.CityId,
+            CategoryId = request.CategoryId,
+            MinRating = request.MinRating,
+            MaxPrice = request.MaxPrice,
+            Currency = request.NormalizedCurrency
+        };
+
+        var destinations = await _destinationRepository.SearchAsync(criteria, skip, pageSize, cancellationToken);
+        var totalCount = await _destinationRepository.CountAsync(criteria, cancellationToken);
 
         var items = destinations
-            .Select(destination => _mapper.Map<DestinationResponse>(destination))
+            .Select(destination => destination.ToSummary(request.Language))
             .ToList();
 
-        return new PagedResult<DestinationResponse>(items, totalCount, page, pageSize);
+        return new PagedResult<DestinationSummaryResponse>(items, totalCount, page, pageSize);
     }
 }
