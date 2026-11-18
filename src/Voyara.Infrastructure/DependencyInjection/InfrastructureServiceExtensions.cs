@@ -94,6 +94,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
+        services.AddGuidesInfrastructure(configuration);
         return services;
     }
 }
