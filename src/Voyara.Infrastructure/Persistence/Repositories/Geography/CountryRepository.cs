@@ -61,4 +61,8 @@ public sealed class CountryRepository : ICountryRepository
 
     public void Update(Country country)
         => _context.Countries.Update(country);
+    public async Task<Country?> GetByCityIdAsync(int cityId, CancellationToken cancellationToken = default)
+        => await _context.Countries
+            .Include(c => c.Cities)
+            .FirstOrDefaultAsync(c => c.Cities.Any(city => city.Id == cityId), cancellationToken);
 }

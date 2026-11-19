@@ -4,6 +4,7 @@ namespace Voyara.Domain.Repositories.Geography;
 
 public interface ICountryRepository
 {
+    Task<Country?> GetByCityIdAsync(int cityId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Country>> GetAllAsync(
         bool? isActive = null,
         string? search = null,
