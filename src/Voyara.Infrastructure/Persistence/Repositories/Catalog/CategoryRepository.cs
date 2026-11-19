@@ -20,10 +20,22 @@ public sealed class CategoryRepository : ICategoryRepository
     }
 
     public async Task<IReadOnlyList<Category>> GetAllAsync(
+        bool? isActive = null,
+        string? search = null,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Categories
-            .AsNoTracking()
+        var query = _context.Categories.AsNoTracking().AsQueryable();
+
+        if (isActive.HasValue)
+            query = query.Where(c => c.IsActive == isActive.Value);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLowerInvariant();
+            query = query.Where(c => c.Code.Contains(term));
+        }
+
+        return await query
             .OrderBy(c => c.Code)
             .ToListAsync(cancellationToken);
     }
