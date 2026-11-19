@@ -147,8 +147,7 @@ namespace Voyara.Domain.Entities.Catalog
         /// Convenience factory method to construct a draft destination from name, description, and location.
         /// </summary>
         public static Destination Create(string name, string? description, GeoPoint location)
-            => Create(location, Guid.NewGuid(), Guid.NewGuid(), 60, "en", name, description, null);
-
+              => Create(location, 1, Guid.NewGuid(), 60, "en", name, description, null);
         // ------------------------------------------------------------------ lifecycle
 
         /// <summary>Makes a draft destination publicly visible.</summary>
