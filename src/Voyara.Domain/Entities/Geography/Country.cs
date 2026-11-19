@@ -48,12 +48,13 @@ namespace Voyara.Domain.Entities.Geography
         /// <returns>The created <see cref="Country"/> instance.</returns>
         /// <exception cref="ArgumentException">An argument is missing or malformed.</exception>
         public static Country Create(string isoCode, string defaultCurrency, string timeZone)
-            => new()
-            {
-                IsCode = NormalizeLetters(isoCode, 2, nameof(isoCode)),
-                DefaultCurrency = NormalizeLetters(defaultCurrency, 3, nameof(defaultCurrency)),
-                TimeZone = NormalizeTimeZone(timeZone)
-            };
+     => new()
+     {
+         IsCode = NormalizeCode(isoCode, 2, nameof(isoCode)),
+         DefaultCurrency = NormalizeCode(defaultCurrency, 3, nameof(defaultCurrency)),
+         TimeZone = NormalizeTimeZone(timeZone),
+         IsActive = true
+     };
 
         /// <summary>Changes the default currency and the time zone. The ISO code never changes.</summary>
         public void Update(string defaultCurrency, string timeZone)
