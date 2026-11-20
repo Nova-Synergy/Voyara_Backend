@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Voyara.Domain\Voyara.Domain.csproj" />
     <ProjectReference Include="..\Voyara.SharedKernel\Voyara.SharedKernel.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Guides\Commands\" />
+    <Folder Include="Guides\Queries\" />
+  </ItemGroup>
 </Project>
