@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
 using Voyara.Application.Planning.Commands.AddJourneyItem;
+using Voyara.Application.Planning.Commands.CustomizeJourney;
 using Voyara.Application.Planning.Commands.GenerateJourney;
 using Voyara.Application.Planning.Commands.MoveJourneyItem;
 using Voyara.Application.Planning.Commands.RemoveJourneyItem;
+using Voyara.Application.Planning.Commands.UpdateJourney;
 using Voyara.Application.Planning.Queries.GetJourneyById;
 using Voyara.Application.Planning.Queries.ValidateJourney;
 
@@ -105,4 +107,30 @@ public sealed class JourneysController : BaseApiController
         Guid itemId,
         CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new RemoveJourneyItemCommand(id, itemId), cancellationToken));
+
+    /// <summary>
+    /// Updates journey title or status.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="request">Update parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromBody] UpdateJourneyRequest request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new UpdateJourneyCommand(id, request.Title, request.Status), cancellationToken));
+
+    /// <summary>
+    /// Customizes an existing journey using natural language instructions.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="request">Customization instruction.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("{id:guid}/customize")]
+    public async Task<IActionResult> Customize(
+        Guid id,
+        [FromBody] CustomizeJourneyRequest request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new CustomizeJourneyCommand(id, request.Instruction), cancellationToken));
 }
