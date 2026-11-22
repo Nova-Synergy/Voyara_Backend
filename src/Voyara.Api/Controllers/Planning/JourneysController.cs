@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
+using Voyara.Application.Planning.Commands.AddJourneyItem;
 using Voyara.Application.Planning.Commands.GenerateJourney;
 using Voyara.Application.Planning.Commands.MoveJourneyItem;
+using Voyara.Application.Planning.Commands.RemoveJourneyItem;
 using Voyara.Application.Planning.Queries.GetJourneyById;
 using Voyara.Application.Planning.Queries.ValidateJourney;
 
@@ -68,4 +70,39 @@ public sealed class JourneysController : BaseApiController
         => HandleResult(await Sender.Send(
             new MoveJourneyItemCommand(id, itemId, request.TargetDayNumber, request.NewOrder),
             cancellationToken));
+
+    /// <summary>
+    /// Adds a destination stop to an itinerary day in the journey.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="request">Stop details (destination, day number, time window, transport).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("{id:guid}/items")]
+    public async Task<IActionResult> AddItem(
+        Guid id,
+        [FromBody] AddJourneyItemRequest request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new AddJourneyItemCommand(
+                id,
+                request.DayNumber,
+                request.DestinationId,
+                request.CityId,
+                request.StartTime,
+                request.EndTime,
+                request.Transport),
+            cancellationToken));
+
+    /// <summary>
+    /// Removes a destination stop from the journey itinerary.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="itemId">The unique identifier of the stop to remove.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpDelete("{id:guid}/items/{itemId:guid}")]
+    public async Task<IActionResult> RemoveItem(
+        Guid id,
+        Guid itemId,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new RemoveJourneyItemCommand(id, itemId), cancellationToken));
 }
