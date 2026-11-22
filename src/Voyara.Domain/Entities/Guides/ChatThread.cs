@@ -78,7 +78,7 @@ namespace Voyara.Domain.Entities.Guides
         /// <summary>
         /// Marks a message as read by the other party. Reading is still allowed on a closed thread.
         /// </summary>
-        internal void MarkMessageAsRead(Guid messageId, Guid readerId, Guid touristUserId, Guid guideUserId, DateTimeOffset now)
+        public void MarkMessageAsRead(Guid messageId, Guid readerId, Guid touristUserId, Guid guideUserId, DateTimeOffset now)
         {
             EnsureParticipant(readerId, touristUserId, guideUserId);
 
