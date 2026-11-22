@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
 using Voyara.Application.Planning.Commands.GenerateJourney;
+using Voyara.Application.Planning.Commands.MoveJourneyItem;
 using Voyara.Application.Planning.Queries.GetJourneyById;
 using Voyara.Application.Planning.Queries.ValidateJourney;
 
@@ -49,5 +50,22 @@ public sealed class JourneysController : BaseApiController
                 request.Country,
                 request.BudgetAmount,
                 request.BudgetCurrency),
+            cancellationToken));
+
+    /// <summary>
+    /// Moves an itinerary stop item to another day or sequence order within the journey.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="itemId">The unique identifier of the item to move.</param>
+    /// <param name="request">Target day number and order.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("{id:guid}/items/{itemId:guid}/move")]
+    public async Task<IActionResult> MoveItem(
+        Guid id,
+        Guid itemId,
+        [FromBody] MoveJourneyItemRequest request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new MoveJourneyItemCommand(id, itemId, request.TargetDayNumber, request.NewOrder),
             cancellationToken));
 }
