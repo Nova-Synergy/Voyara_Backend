@@ -45,3 +45,26 @@ public sealed record JourneyRecommendationResponse(
     double MatchScore,
     string Reason,
     IReadOnlyList<Guid> Highlights);
+
+/// <summary>
+/// Read model representing a recommended activity or destination attraction with affinity scoring and pricing details.
+/// </summary>
+/// <param name="DestinationId">The destination's unique identifier.</param>
+/// <param name="Name">Localized name of the activity or destination.</param>
+/// <param name="Description">Localized description or highlights.</param>
+/// <param name="Category">Category code or classification.</param>
+/// <param name="AdmissionPrice">Base ticket admission price, if applicable.</param>
+/// <param name="Currency">Currency code of the admission price (e.g. USD).</param>
+/// <param name="EstimatedVisitMinutes">Estimated duration of the activity in minutes.</param>
+/// <param name="MatchScore">Normalized affinity match score (0.0 to 1.0).</param>
+/// <param name="Reason">AI or algorithmic justification for the recommendation.</param>
+public sealed record ActivityRecommendationResponse(
+    Guid DestinationId,
+    string Name,
+    string? Description,
+    string? Category,
+    decimal AdmissionPrice,
+    string Currency,
+    int EstimatedVisitMinutes,
+    double MatchScore,
+    string Reason);

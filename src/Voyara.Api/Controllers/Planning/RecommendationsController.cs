@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Application.DTOs;
+using Voyara.Application.Recommendations.Queries.GetActivityRecommendations;
 using Voyara.Application.Recommendations.Queries.GetDestinationRecommendations;
 using Voyara.Application.Recommendations.Queries.GetJourneyRecommendations;
 
@@ -41,5 +42,22 @@ public sealed class RecommendationsController : BaseApiController
         CancellationToken cancellationToken = default)
         => HandleResult(await Sender.Send(
             new GetJourneyRecommendationsQuery(limit, totalDays),
+            cancellationToken));
+
+    /// <summary>
+    /// Retrieves personalized or trending activity recommendations.
+    /// </summary>
+    /// <param name="limit">Maximum recommendations to return (defaults to 5).</param>
+    /// <param name="cityId">Optional city filter.</param>
+    /// <param name="categoryId">Optional category filter.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("activities")]
+    public async Task<IActionResult> GetActivityRecommendations(
+        [FromQuery] int limit = 5,
+        [FromQuery] Guid? cityId = null,
+        [FromQuery] Guid? categoryId = null,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new GetActivityRecommendationsQuery(limit, cityId, categoryId),
             cancellationToken));
 }
