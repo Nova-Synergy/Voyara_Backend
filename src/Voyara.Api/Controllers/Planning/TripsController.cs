@@ -5,6 +5,7 @@ using Voyara.Application.Trips.Commands.DeleteTrip;
 using Voyara.Application.Trips.Commands.ShareTrip;
 using Voyara.Application.Trips.Commands.UpdateTrip;
 using Voyara.Application.Trips.Queries.GetMyTrips;
+using Voyara.Application.Trips.Queries.GetSharedTripByToken;
 using Voyara.Application.Trips.Queries.GetTripById;
 using Voyara.Domain.Enums;
 
@@ -100,4 +101,13 @@ public sealed class TripsController : BaseApiController
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteTrip(Guid id, CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new DeleteTripCommand(id), cancellationToken));
+
+    /// <summary>
+    /// Retrieves a trip plan using an active public/shared link token.
+    /// </summary>
+    /// <param name="token">The secure random share token.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("shared/{token}")]
+    public async Task<IActionResult> GetSharedTrip(string token, CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new GetSharedTripByTokenQuery(token), cancellationToken));
 }
