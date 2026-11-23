@@ -4,11 +4,13 @@ namespace Voyara.Domain.Entities.Geography
 {
     /// <summary>
     /// Represents a country that groups cities and carries the defaults used for its destinations.
-    /// It composes its cities: they are created and changed only through the country.
     /// </summary>
     public sealed class Country : AuditableEntity
     {
-        private readonly List<City> _cities = [];
+        /// <summary>
+        /// Gets the database-generated identifier (hides the Guid Id of the base class).
+        /// </summary>
+        public new int Id { get; private set; }
 
         /// <summary>
         /// Gets the ISO 3166-1 alpha-2 country code, for example EG.
@@ -31,38 +33,34 @@ namespace Voyara.Domain.Entities.Geography
         public bool IsActive { get; private set; }
 
         /// <summary>
-        /// Read-only view of the cities (1..*). Cities are added only through <see cref="AddCity"/>.
+        /// Gets the cities that belong to the country (0..*).
         /// </summary>
-        public IReadOnlyCollection<City> Cities => _cities.AsReadOnly();
+        public ICollection<City> Cities { get; private set; } = new List<City>();
 
         private Country()
         {
         }
 
-        /// <summary>
-        /// Creates a country. It stays hidden from tourists until <see cref="Activate"/> is called.
-        /// </summary>
-        /// <param name="isoCode">Two-letter ISO 3166-1 code.</param>
-        /// <param name="defaultCurrency">Three-letter ISO 4217 code.</param>
-        /// <param name="timeZone">IANA time zone identifier.</param>
+        /// <summary>Creates an active country.</summary>
+        /// <param name="isoCode">ISO 3166-1 alpha-2 code, for example EG.</param>
+        /// <param name="defaultCurrency">ISO 4217 currency code, for example EGP.</param>
+        /// <param name="timeZone">IANA time zone identifier, for example Africa/Cairo.</param>
         /// <returns>The created <see cref="Country"/> instance.</returns>
-        /// <exception cref="ArgumentException">A value is missing or malformed.</exception>
+        /// <exception cref="ArgumentException">An argument is missing or malformed.</exception>
         public static Country Create(string isoCode, string defaultCurrency, string timeZone)
-        {
-            return new Country
+            => new()
             {
                 IsCode = NormalizeLetters(isoCode, 2, nameof(isoCode)),
                 DefaultCurrency = NormalizeLetters(defaultCurrency, 3, nameof(defaultCurrency)),
                 TimeZone = NormalizeTimeZone(timeZone)
             };
+
+        /// <summary>Changes the default currency and the time zone. The ISO code never changes.</summary>
+        public void Update(string defaultCurrency, string timeZone)
+        {
+            DefaultCurrency = NormalizeCode(defaultCurrency, 3, nameof(defaultCurrency));
+            TimeZone = NormalizeTimeZone(timeZone);
         }
-
-        /// <summary>Changes the default currency.</summary>
-        public void ChangeDefaultCurrency(string defaultCurrency)
-            => DefaultCurrency = NormalizeLetters(defaultCurrency, 3, nameof(defaultCurrency));
-
-        /// <summary>Changes the IANA time zone.</summary>
-        public void ChangeTimeZone(string timeZone) => TimeZone = NormalizeTimeZone(timeZone);
 
         /// <summary>Makes the country visible to tourists.</summary>
         /// <exception cref="InvalidOperationException">The country is already active.</exception>
@@ -74,7 +72,7 @@ namespace Voyara.Domain.Entities.Geography
             IsActive = true;
         }
 
-        /// <summary>Hides the country from tourists together with all of its cities.</summary>
+        /// <summary>Hides the country from tourists.</summary>
         /// <exception cref="InvalidOperationException">The country is already inactive.</exception>
         public void Deactivate()
         {
@@ -82,48 +80,24 @@ namespace Voyara.Domain.Entities.Geography
                 throw new InvalidOperationException("The country is already inactive.");
 
             IsActive = false;
-            _cities.ForEach(city => city.Deactivate());
         }
 
-        /// <summary>Adds a city to the country; the city stays hidden until <see cref="ActivateCity"/> is called.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The coordinates are out of range.</exception>
+        /// <summary>Adds an active city to the country.</summary>
+        /// <exception cref="ArgumentOutOfRangeException">A coordinate is outside its valid range.</exception>
         public City AddCity(double latitude, double longitude)
         {
             var city = City.Create(this, latitude, longitude);
-            _cities.Add(city);
+            Cities.Add(city);
             return city;
         }
 
-        /// <summary>Makes a city visible to tourists. Only possible while the country itself is active.</summary>
-        /// <exception cref="InvalidOperationException">The country is inactive or the city is not part of it.</exception>
-        public void ActivateCity(Guid cityId)
+        private static string NormalizeCode(string code, int length, string paramName)
         {
-            if (!IsActive)
-                throw new InvalidOperationException("A city cannot be activated inside an inactive country.");
+            ArgumentException.ThrowIfNullOrWhiteSpace(code, paramName);
 
-            FindCity(cityId).Activate();
-        }
-
-        /// <summary>Hides a city from tourists.</summary>
-        /// <exception cref="InvalidOperationException">The city is not part of this country.</exception>
-        public void DeactivateCity(Guid cityId) => FindCity(cityId).Deactivate();
-
-        /// <summary>Moves the center of a city.</summary>
-        /// <exception cref="InvalidOperationException">The city is not part of this country.</exception>
-        public void MoveCityCenter(Guid cityId, double latitude, double longitude)
-            => FindCity(cityId).MoveCenter(latitude, longitude);
-
-        private City FindCity(Guid cityId)
-            => _cities.Find(city => city.Id == cityId)
-               ?? throw new InvalidOperationException("The city is not part of this country.");
-
-        private static string NormalizeLetters(string value, int length, string parameterName)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
-
-            var normalized = value.Trim().ToUpperInvariant();
+            var normalized = code.Trim().ToUpperInvariant();
             if (normalized.Length != length || !normalized.All(char.IsAsciiLetterUpper))
-                throw new ArgumentException($"Value must be exactly {length} letters.", parameterName);
+                throw new ArgumentException($"Value must be a {length}-letter code.", paramName);
 
             return normalized;
         }

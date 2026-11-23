@@ -1,13 +1,21 @@
 ﻿using Voyara.Domain.Entities.Localization;
 
-namespace Voyara.Domain.Repositories.LocalizationP
-{
+namespace Voyara.Domain.Repositories.Localization;
 
-    /// <summary>
-    /// Persistence contract for <see cref="Language"/>. Destination translations are part of the
-    /// Destination aggregate and are saved through <c>IDestinationRepository</c>.
-    /// </summary>
-    public interface ILanguageRepository
-    {
-    }
+public interface ILanguageRepository
+{
+    Task<Language?> GetByCodeAsync(
+        string code,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Language>> GetAllAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsByCodeAsync(
+        string code,
+        CancellationToken cancellationToken = default);
+
+    void Add(Language language);
+
+    void Remove(Language language);
 }
