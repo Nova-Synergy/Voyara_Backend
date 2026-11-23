@@ -3,6 +3,7 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Voyara.Application.Behaviors;
+using Voyara.Application.CostEstimation.Services;
 using Voyara.Application.Planning.Services;
 
 namespace Voyara.Application.DependencyInjection;
@@ -34,6 +35,7 @@ public static class ApplicationServiceExtensions
         services.AddMapster();
 
         services.AddScoped<IJourneyConstraintValidator, JourneyConstraintValidator>();
+        services.AddScoped<ITransportationCostEstimator, TransportationCostEstimator>();
 
         return services;
     }

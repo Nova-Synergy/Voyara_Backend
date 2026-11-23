@@ -1,0 +1,33 @@
+namespace Voyara.Application.DTOs;
+
+/// <summary>
+/// Read model representing an individual itemized cost line.
+/// </summary>
+/// <param name="Description">Descriptive summary of the expense.</param>
+/// <param name="Amount">Monetary cost amount.</param>
+/// <param name="Currency">Three-letter ISO 4217 currency code.</param>
+/// <param name="Category">The expense category name (e.g. Transportation, Accommodation, Activities).</param>
+public sealed record CostLineResponse(
+    string Description,
+    decimal Amount,
+    string Currency,
+    string Category);
+
+/// <summary>
+/// Read model representing an estimated monetary range.
+/// </summary>
+public sealed record CostRangeResponse(
+    decimal Minimum,
+    decimal Maximum,
+    string Currency);
+
+/// <summary>
+/// Read model representing a category-specific cost estimate with breakdown lines and range.
+/// </summary>
+public sealed record CategoryCostEstimateResponse(
+    string Category,
+    decimal TotalAmount,
+    decimal MinAmount,
+    decimal MaxAmount,
+    string Currency,
+    IReadOnlyList<CostLineResponse> Lines);

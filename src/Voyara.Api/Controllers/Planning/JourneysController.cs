@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
+using Voyara.Application.CostEstimation.Queries.EstimateTransportationCost;
 using Voyara.Application.Planning.Commands.AddJourneyItem;
 using Voyara.Application.Planning.Commands.CustomizeJourney;
 using Voyara.Application.Planning.Commands.GenerateJourney;
@@ -133,4 +134,17 @@ public sealed class JourneysController : BaseApiController
         [FromBody] CustomizeJourneyRequest request,
         CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new CustomizeJourneyCommand(id, request.Instruction), cancellationToken));
+
+    /// <summary>
+    /// Calculates transportation cost estimates for a journey itinerary.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="currency">Optional currency code (defaults to USD).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost/transportation")]
+    public async Task<IActionResult> EstimateTransportationCost(
+        Guid id,
+        [FromQuery] string? currency,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new EstimateTransportationCostQuery(id, currency), cancellationToken));
 }
