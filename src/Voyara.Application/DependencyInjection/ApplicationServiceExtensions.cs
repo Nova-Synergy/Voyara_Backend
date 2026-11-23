@@ -37,6 +37,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IJourneyConstraintValidator, JourneyConstraintValidator>();
         services.AddScoped<ITransportationCostEstimator, TransportationCostEstimator>();
         services.AddScoped<IAccommodationCostEstimator, AccommodationCostEstimator>();
+        services.AddScoped<IActivitiesCostEstimator, ActivitiesCostEstimator>();
 
         return services;
     }
