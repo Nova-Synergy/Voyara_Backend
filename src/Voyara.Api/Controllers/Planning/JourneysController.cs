@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
 using Voyara.Application.CostEstimation.Commands.GenerateCostEstimate;
+using Voyara.Application.CostEstimation.Queries.ConvertCostBreakdown;
 using Voyara.Application.CostEstimation.Queries.EstimateAccommodationCost;
 using Voyara.Application.CostEstimation.Queries.EstimateActivitiesCost;
 using Voyara.Application.CostEstimation.Queries.EstimateTransportationCost;
@@ -207,4 +208,17 @@ public sealed class JourneysController : BaseApiController
         [FromQuery] string? currency,
         CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new GetJourneyCostBreakdownQuery(id, currency), cancellationToken));
+
+    /// <summary>
+    /// Converts a journey's cost breakdown to a requested target currency using current exchange rates.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="targetCurrency">The ISO currency code to convert into (e.g. EUR, GBP).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost-breakdown/convert")]
+    public async Task<IActionResult> ConvertCostBreakdown(
+        Guid id,
+        [FromQuery] string targetCurrency,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new ConvertCostBreakdownQuery(id, targetCurrency), cancellationToken));
 }

@@ -62,3 +62,19 @@ public sealed record JourneyCostBreakdownResponse(
     IReadOnlyList<CategoryCostEstimateResponse> Categories,
     IReadOnlyList<CostLineResponse> Lines,
     string Disclaimer);
+
+/// <summary>
+/// Read model representing a currency-converted cost breakdown for a journey.
+/// </summary>
+public sealed record ConvertedCostBreakdownResponse(
+    Guid JourneyId,
+    Guid? EstimateId,
+    string BaseCurrency,
+    string TargetCurrency,
+    decimal ExchangeRate,
+    decimal ConvertedTotalCost,
+    decimal ConvertedMinCost,
+    decimal ConvertedMaxCost,
+    IReadOnlyList<CategoryCostEstimateResponse> Categories,
+    IReadOnlyList<CostLineResponse> Lines,
+    string Disclaimer);
