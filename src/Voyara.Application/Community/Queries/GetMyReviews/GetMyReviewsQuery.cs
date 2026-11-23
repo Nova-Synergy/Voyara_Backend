@@ -1,6 +1,7 @@
 ﻿using Voyara.Application.Abstractions.Authorization;
 using Voyara.Application.Abstractions.Messaging;
 using Voyara.Application.Community.DTOs;
+using Voyara.Application.DTOs;
 
 namespace Voyara.Application.Community.Queries.GetMyReviews;
 
@@ -14,4 +15,4 @@ namespace Voyara.Application.Community.Queries.GetMyReviews;
 /// </remarks>
 [AuthorizeRequest(Roles.Tourist)]
 public sealed record GetMyReviewsQuery(int Page = 1, int PageSize = 10)
-    : IQuery<IReadOnlyList<ReviewResponse>>;
+    : IQuery<PagedResult<ReviewResponse>>;

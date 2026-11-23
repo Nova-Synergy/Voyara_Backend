@@ -47,6 +47,35 @@ public sealed class FavoriteRepository : IFavoriteRepository
             .ToListAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Favorite>> GetByUserIdAsync(
+        Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Favorites
+            .AsNoTracking()
+            .Where(favorite => favorite.UserId == userId)
+            .OrderByDescending(favorite => favorite.CreatedAt)
+            .ThenByDescending(favorite => favorite.Id)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<int> CountByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.Favorites
+            .CountAsync(
+                favorite => favorite.UserId == userId,
+                cancellationToken);
+    }
+
+    /// <inheritdoc />
     public void Add(Favorite favorite)
     {
         _context.Favorites.Add(favorite);

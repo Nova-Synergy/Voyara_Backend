@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Voyara.Application.Abstractions;
 using Voyara.Application.Community.DTOs;
+using Voyara.Application.DTOs;
 using Voyara.Domain.Repositories.Community;
 using Voyara.SharedKernel.Results;
 
@@ -18,7 +19,9 @@ namespace Voyara.Application.Community.Queries.GetMyReviews;
 /// successful Result containing the list of DTOs.</para>
 /// </remarks>
 public sealed class GetMyReviewsQueryHandler
-    : IRequestHandler<GetMyReviewsQuery, Result<IReadOnlyList<ReviewResponse>>>
+    : IRequestHandler<
+        GetMyReviewsQuery,
+        Result<PagedResult<ReviewResponse>>>
 {
     private readonly IReviewRepository _repository;
     private readonly ICurrentUser _currentUser;
@@ -31,19 +34,21 @@ public sealed class GetMyReviewsQueryHandler
         _currentUser = currentUser;
     }
 
-    public async Task<Result<IReadOnlyList<ReviewResponse>>> Handle(
+    public async Task<Result<PagedResult<ReviewResponse>>> Handle(
         GetMyReviewsQuery request,
         CancellationToken cancellationToken)
     {
         if (_currentUser.UserId is not Guid userId)
         {
-            return Result.Failure<IReadOnlyList<ReviewResponse>>(
+            return Result.Failure<PagedResult<ReviewResponse>>(
                 Error.Unauthorized("Review.Unauthenticated", "Authentication is required."));
         }
 
         var page = Math.Max(1, request.Page);
         var pageSize = Math.Clamp(request.PageSize, 1, 100);
-        var skip = (page - 1) * pageSize;
+        var skip = (int)Math.Min(
+        (long)(page - 1) * pageSize,
+        int.MaxValue);
 
         var reviews = await _repository.GetByUserAsync(
             userId,
@@ -51,9 +56,19 @@ public sealed class GetMyReviewsQueryHandler
             pageSize,
             cancellationToken);
 
-        IReadOnlyList<ReviewResponse> response = reviews
+        var totalCount = await _repository.CountByUserIdAsync(
+             userId,
+             cancellationToken);
+
+        IReadOnlyList<ReviewResponse> items = reviews
             .Select(ReviewResponse.From)
             .ToList();
+
+        var response = new PagedResult<ReviewResponse>(
+            items,
+            totalCount,
+            page,
+            pageSize);
 
         return Result.Success(response);
     }

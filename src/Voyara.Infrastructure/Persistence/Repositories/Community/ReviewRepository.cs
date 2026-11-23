@@ -33,6 +33,22 @@ public sealed class ReviewRepository : IReviewRepository
                 cancellationToken);
     }
 
+    /// <inheritdoc />
+    public Task<Review?> GetByIdForUserAsync(
+        Guid reviewId,
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        // Tracking is required because the caller modifies the aggregate.
+        return _context.Reviews
+            .Include(review => review.Photos)
+            .FirstOrDefaultAsync(
+                review =>
+                    review.Id == reviewId &&
+                    review.UserId == userId,
+                cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Review>> GetByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
@@ -43,6 +59,35 @@ public sealed class ReviewRepository : IReviewRepository
             .Where(review => review.UserId == userId)
             .OrderByDescending(review => review.VisitDate)
             .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Review>> GetByUserAsync(
+        Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Reviews
+            .AsNoTracking()
+            .Include(review => review.Photos)
+            .Where(review => review.UserId == userId)
+            .OrderByDescending(review => review.VisitDate)
+            .ThenByDescending(review => review.Id)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<int> CountByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.Reviews
+            .CountAsync(
+                review => review.UserId == userId,
+                cancellationToken);
     }
 
     /// <inheritdoc />

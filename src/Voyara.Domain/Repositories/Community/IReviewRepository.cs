@@ -21,6 +21,15 @@ public interface IReviewRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves a review belonging to a specific user.
+    /// Used when the user needs to modify or delete their own review.
+    /// </summary>
+    Task<Review?> GetByIdForUserAsync(
+        Guid reviewId,
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retrieves all review aggregates associated with a specific user asynchronously.
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose reviews are being retrieved.</param>
@@ -29,6 +38,22 @@ public interface IReviewRepository
     /// A task representing the asynchronous operation. The task result contains a read-only list of reviews created by the specified user.
     /// </returns>
     Task<IReadOnlyList<Review>> GetByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves one page of reviews created by a specific user.
+    /// </summary>
+    Task<IReadOnlyList<Review>> GetByUserAsync(
+        Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Counts the active reviews created by a specific user.
+    /// </summary>
+    Task<int> CountByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 

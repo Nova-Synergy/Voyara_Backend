@@ -32,6 +32,16 @@ public interface IFavoriteRepository
     /// </returns>
     Task<IReadOnlyList<Favorite>> GetByUserIdAsync(
         Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
+
+
+    /// <summary>
+    /// Counts active favorites belonging to a user.
+    /// </summary>
+    Task<int> CountByUserIdAsync(
+        Guid userId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
