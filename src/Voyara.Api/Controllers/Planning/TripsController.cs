@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
 using Voyara.Application.Trips.Commands.CreateTrip;
 using Voyara.Application.Trips.Commands.DeleteTrip;
+using Voyara.Application.Trips.Commands.ShareTrip;
 using Voyara.Application.Trips.Commands.UpdateTrip;
 using Voyara.Application.Trips.Queries.GetMyTrips;
 using Voyara.Application.Trips.Queries.GetTripById;
@@ -77,6 +78,19 @@ public sealed class TripsController : BaseApiController
                 request.Visibility,
                 request.Status),
             cancellationToken));
+
+    /// <summary>
+    /// Generates a secure share link token for a trip.
+    /// </summary>
+    /// <param name="id">The unique identifier of the trip.</param>
+    /// <param name="request">Optional expiration timestamp.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("{id:guid}/share")]
+    public async Task<IActionResult> ShareTrip(
+        Guid id,
+        [FromBody] ShareTripRequest? request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new ShareTripCommand(id, request?.ExpiresAt), cancellationToken));
 
     /// <summary>
     /// Deletes a trip and revokes associated resources.
