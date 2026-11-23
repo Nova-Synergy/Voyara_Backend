@@ -15,7 +15,7 @@ public sealed class PlaceSuggestionRepository
     private readonly VoyaraDbContext _context;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FavoriteRepository"/> class.
+    /// Initializes a new instance of the <see cref="PlaceSuggestionRepository"/> class.
     /// </summary>
     /// <param name="context">The database context used for community persistence.</param>
     public PlaceSuggestionRepository(VoyaraDbContext context)
@@ -23,6 +23,7 @@ public sealed class PlaceSuggestionRepository
         _context = context;
     }
 
+    /// <inheritdoc />
     public Task<PlaceSuggestion?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
@@ -34,6 +35,35 @@ public sealed class PlaceSuggestionRepository
                 cancellationToken);
     }
 
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<PlaceSuggestion>> GetByUserAsync(
+        Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.PlaceSuggestions
+            .AsNoTracking()
+            .Include(suggestion => suggestion.Photos)
+            .Where(suggestion => suggestion.UserId == userId)
+            .OrderByDescending(suggestion => suggestion.CreatedAt)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<int> CountByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.PlaceSuggestions
+            .CountAsync(
+                suggestion => suggestion.UserId == userId,
+                cancellationToken);
+    }
+
+    /// <inheritdoc />
     public async Task<IReadOnlyList<PlaceSuggestion>> GetByStatusAsync(
         SuggestionStatus status,
         CancellationToken cancellationToken = default)
@@ -46,6 +76,7 @@ public sealed class PlaceSuggestionRepository
             .ToListAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public void Add(PlaceSuggestion suggestion)
     {
         _context.PlaceSuggestions.Add(suggestion);

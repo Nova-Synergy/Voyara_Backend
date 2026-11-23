@@ -172,4 +172,68 @@ public sealed class PlaceSuggestion : AggregateRoot
 
         return Result.Success();
     }
+
+    /// <summary>
+    /// Updates a pending suggestion if the supplied user owns it.
+    /// </summary>
+    /// <param name="userId">Identifier of the user requesting the update.</param>
+    /// <param name="name">Updated proposed place name.</param>
+    /// <param name="description">Updated place description.</param>
+    /// <param name="location">Updated geographical location.</param>
+    /// <param name="reason">Updated reason for suggesting the place.</param>
+    /// <returns>A successful result when the suggestion is updated; otherwise, a failure result.</returns>
+    public Result Update(
+        Guid userId,
+        string name,
+        string description,
+        GeoPoint location,
+        string reason)
+    {
+        if (userId == Guid.Empty || userId != UserId)
+            return Result.Failure(PlaceSuggestionErrors.NotOwner);
+
+        if (IsDeleted)
+            return Result.Failure(PlaceSuggestionErrors.AlreadyDeleted);
+
+        if (Status != SuggestionStatus.Pending)
+            return Result.Failure(
+                PlaceSuggestionErrors.InvalidTransition("update", Status));
+
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure(PlaceSuggestionErrors.NameRequired);
+
+        if (string.IsNullOrWhiteSpace(description))
+            return Result.Failure(PlaceSuggestionErrors.DescriptionRequired);
+
+        if (location is null)
+            return Result.Failure(PlaceSuggestionErrors.LocationRequired);
+
+        if (string.IsNullOrWhiteSpace(reason))
+            return Result.Failure(PlaceSuggestionErrors.ReasonRequired);
+
+        Name = name.Trim();
+        Description = description.Trim();
+        Location = location;
+        Reason = reason.Trim();
+
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Soft-deletes the suggestion if the supplied user owns it.
+    /// </summary>
+    /// <param name="userId">Identifier of the user requesting deletion.</param>
+    /// <returns>A successful result when the suggestion is deleted; otherwise, a failure result.</returns>
+    public Result Delete(Guid userId)
+    {
+        if (userId == Guid.Empty || userId != UserId)
+            return Result.Failure(PlaceSuggestionErrors.NotOwner);
+
+        if (IsDeleted)
+            return Result.Failure(PlaceSuggestionErrors.AlreadyDeleted);
+
+        IsDeleted = true;
+
+        return Result.Success();
+    }
 }

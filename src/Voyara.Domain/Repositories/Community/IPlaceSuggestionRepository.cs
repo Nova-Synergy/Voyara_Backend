@@ -22,13 +22,30 @@ public interface IPlaceSuggestionRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves all place suggestion aggregates matching the specified status asynchronously.
+    /// Retrieves place suggestions belonging to a user.
     /// </summary>
-    /// <param name="status">The suggestion status filter to apply.</param>
-    /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
-    /// <returns>
-    /// A task representing the asynchronous operation. The task result contains a read-only list of place suggestions matching the given status.
-    /// </returns>
+    /// <param name="userId">The owner's identifier.</param>
+    /// <param name="skip">The number of records to skip.</param>
+    /// <param name="take">The maximum number of records to retrieve.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    Task<IReadOnlyList<PlaceSuggestion>> GetByUserAsync(
+        Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Counts the active place suggestions belonging to a user.
+    /// </summary>
+    /// <param name="userId">The owner's identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    Task<int> CountByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves place suggestions having the specified status.
+    /// </summary>
     Task<IReadOnlyList<PlaceSuggestion>> GetByStatusAsync(
         SuggestionStatus status,
         CancellationToken cancellationToken = default);
