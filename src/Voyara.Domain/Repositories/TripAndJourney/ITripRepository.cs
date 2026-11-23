@@ -24,6 +24,22 @@ public interface ITripRepository
     Task<IReadOnlyList<Trip>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Searches and pages trips owned by a specific user with an optional status filter.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the owning user.</param>
+    /// <param name="status">Optional status filter.</param>
+    /// <param name="skip">Number of records to skip.</param>
+    /// <param name="take">Number of records to take.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A tuple of items and total count.</returns>
+    Task<(IReadOnlyList<Trip> Items, int TotalCount)> GetPagedByUserIdAsync(
+        Guid userId,
+        Voyara.Domain.Enums.TripStatus? status,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retrieves a trip by an active share token.
     /// </summary>
     /// <param name="token">The URL-safe random token string.</param>

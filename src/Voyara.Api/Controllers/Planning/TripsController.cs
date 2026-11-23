@@ -3,7 +3,9 @@ using Voyara.Api.Contracts.Planning;
 using Voyara.Application.Trips.Commands.CreateTrip;
 using Voyara.Application.Trips.Commands.DeleteTrip;
 using Voyara.Application.Trips.Commands.UpdateTrip;
+using Voyara.Application.Trips.Queries.GetMyTrips;
 using Voyara.Application.Trips.Queries.GetTripById;
+using Voyara.Domain.Enums;
 
 namespace Voyara.Api.Controllers.Planning;
 
@@ -13,6 +15,21 @@ namespace Voyara.Api.Controllers.Planning;
 [Route("api/v1/[controller]")]
 public sealed class TripsController : BaseApiController
 {
+    /// <summary>
+    /// Retrieves a paginated list of trips belonging to the authenticated tourist.
+    /// </summary>
+    /// <param name="page">1-based page index (defaults to 1).</param>
+    /// <param name="pageSize">Number of items per page (defaults to 10).</param>
+    /// <param name="status">Optional status filter (e.g. Draft, Upcoming, Ongoing, Completed, Cancelled).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet]
+    public async Task<IActionResult> GetMyTrips(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] TripStatus? status = null,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(new GetMyTripsQuery(page, pageSize, status), cancellationToken));
+
     /// <summary>
     /// Gets a trip by its unique identifier.
     /// </summary>

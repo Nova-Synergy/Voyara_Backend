@@ -40,6 +40,34 @@ public sealed class TripRepository : ITripRepository
     }
 
     /// <inheritdoc />
+    public async Task<(IReadOnlyList<Trip> Items, int TotalCount)> GetPagedByUserIdAsync(
+        Guid userId,
+        Voyara.Domain.Enums.TripStatus? status,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Set<Trip>()
+            .Include(t => t.Shares)
+            .Include(t => t.Journey)
+            .Where(t => t.UserId == userId);
+
+        if (status.HasValue)
+        {
+            query = query.Where(t => t.Status == status.Value);
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
+            .OrderByDescending(t => t.StartDate)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
+    /// <inheritdoc />
     public async Task<Trip?> GetByShareTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         return await _context.Set<Trip>()
