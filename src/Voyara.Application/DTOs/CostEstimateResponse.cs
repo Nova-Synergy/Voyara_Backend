@@ -31,3 +31,19 @@ public sealed record CategoryCostEstimateResponse(
     decimal MaxAmount,
     string Currency,
     IReadOnlyList<CostLineResponse> Lines);
+
+/// <summary>
+/// Read model representing the overall cost estimate snapshot generated for a journey.
+/// </summary>
+public sealed record CostEstimateResultResponse(
+    Guid Id,
+    Guid JourneyId,
+    Guid? TripId,
+    Guid UserId,
+    DateTimeOffset CalculatedAt,
+    decimal TotalCost,
+    decimal MinCost,
+    decimal MaxCost,
+    string Currency,
+    IReadOnlyList<CategoryCostEstimateResponse> Categories,
+    IReadOnlyList<CostLineResponse> Lines);

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
+using Voyara.Application.CostEstimation.Commands.GenerateCostEstimate;
 using Voyara.Application.CostEstimation.Queries.EstimateAccommodationCost;
 using Voyara.Application.CostEstimation.Queries.EstimateActivitiesCost;
 using Voyara.Application.CostEstimation.Queries.EstimateTransportationCost;
@@ -177,4 +178,19 @@ public sealed class JourneysController : BaseApiController
         [FromQuery] string? currency,
         CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new EstimateActivitiesCostQuery(id, currency), cancellationToken));
+
+    /// <summary>
+    /// Generates and records an itemized cost estimate snapshot for a journey itinerary.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="request">Optional estimation preferences (currency and lodging tier).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("{id:guid}/cost-estimate")]
+    public async Task<IActionResult> GenerateCostEstimate(
+        Guid id,
+        [FromBody] GenerateCostEstimateRequest? request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new GenerateCostEstimateCommand(id, request?.Currency, request?.LodgingTier),
+            cancellationToken));
 }
