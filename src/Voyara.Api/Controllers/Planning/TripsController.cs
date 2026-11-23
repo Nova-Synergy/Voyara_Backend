@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
 using Voyara.Application.Trips.Commands.CreateTrip;
 using Voyara.Application.Trips.Commands.DeleteTrip;
+using Voyara.Application.Trips.Queries.GetTripById;
 
 namespace Voyara.Api.Controllers.Planning;
 
@@ -11,6 +12,15 @@ namespace Voyara.Api.Controllers.Planning;
 [Route("api/v1/[controller]")]
 public sealed class TripsController : BaseApiController
 {
+    /// <summary>
+    /// Gets a trip by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the trip.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new GetTripByIdQuery(id), cancellationToken));
+
     /// <summary>
     /// Creates a new tourist trip plan.
     /// </summary>
