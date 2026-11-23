@@ -13,4 +13,7 @@ public interface ICityTransportRepository
 
     /// <summary>Registers a new city transport for insertion.</summary>
     void Add(CityTransport cityTransport);
+
+    /// <summary>Registers a city transport for removal (turned into a soft delete on save).</summary>
+    void Remove(CityTransport cityTransport);
 }

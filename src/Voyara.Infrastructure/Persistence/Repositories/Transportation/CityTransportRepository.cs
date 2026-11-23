@@ -25,4 +25,7 @@ public sealed class CityTransportRepository : ICityTransportRepository
 
     /// <inheritdoc />
     public void Add(CityTransport cityTransport) => _context.CityTransports.Add(cityTransport);
+
+    /// <inheritdoc />
+    public void Remove(CityTransport cityTransport) => _context.CityTransports.Remove(cityTransport);
 }
