@@ -4,6 +4,7 @@ using Voyara.Application.CostEstimation.Commands.GenerateCostEstimate;
 using Voyara.Application.CostEstimation.Queries.EstimateAccommodationCost;
 using Voyara.Application.CostEstimation.Queries.EstimateActivitiesCost;
 using Voyara.Application.CostEstimation.Queries.EstimateTransportationCost;
+using Voyara.Application.CostEstimation.Queries.GetJourneyCostBreakdown;
 using Voyara.Application.Planning.Commands.AddJourneyItem;
 using Voyara.Application.Planning.Commands.CustomizeJourney;
 using Voyara.Application.Planning.Commands.GenerateJourney;
@@ -193,4 +194,17 @@ public sealed class JourneysController : BaseApiController
         => HandleResult(await Sender.Send(
             new GenerateCostEstimateCommand(id, request?.Currency, request?.LodgingTier),
             cancellationToken));
+
+    /// <summary>
+    /// Retrieves the comprehensive cost breakdown and itemized estimates for a journey.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="currency">Optional target currency code (defaults to USD).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost-breakdown")]
+    public async Task<IActionResult> GetCostBreakdown(
+        Guid id,
+        [FromQuery] string? currency,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new GetJourneyCostBreakdownQuery(id, currency), cancellationToken));
 }

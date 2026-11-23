@@ -47,3 +47,18 @@ public sealed record CostEstimateResultResponse(
     string Currency,
     IReadOnlyList<CategoryCostEstimateResponse> Categories,
     IReadOnlyList<CostLineResponse> Lines);
+
+/// <summary>
+/// Read model representing a complete journey cost breakdown including itemized lines, categories, range, and disclaimer.
+/// </summary>
+public sealed record JourneyCostBreakdownResponse(
+    Guid JourneyId,
+    Guid? EstimateId,
+    DateTimeOffset? CalculatedAt,
+    decimal TotalCost,
+    decimal MinCost,
+    decimal MaxCost,
+    string Currency,
+    IReadOnlyList<CategoryCostEstimateResponse> Categories,
+    IReadOnlyList<CostLineResponse> Lines,
+    string Disclaimer);
