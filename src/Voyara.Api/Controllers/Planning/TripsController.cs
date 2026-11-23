@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
 using Voyara.Application.Trips.Commands.CreateTrip;
 using Voyara.Application.Trips.Commands.DeleteTrip;
+using Voyara.Application.Trips.Commands.UpdateTrip;
 using Voyara.Application.Trips.Queries.GetTripById;
 
 namespace Voyara.Api.Controllers.Planning;
@@ -37,6 +38,27 @@ public sealed class TripsController : BaseApiController
                 request.EndDate,
                 request.Visibility,
                 request.JourneyId),
+            cancellationToken));
+
+    /// <summary>
+    /// Updates an existing trip's details, schedule, visibility, or status.
+    /// </summary>
+    /// <param name="id">The unique identifier of the trip to update.</param>
+    /// <param name="request">The updated trip information.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateTrip(
+        Guid id,
+        [FromBody] UpdateTripRequest request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new UpdateTripCommand(
+                id,
+                request.Title,
+                request.StartDate,
+                request.EndDate,
+                request.Visibility,
+                request.Status),
             cancellationToken));
 
     /// <summary>
