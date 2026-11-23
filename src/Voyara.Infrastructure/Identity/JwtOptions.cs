@@ -1,10 +1,13 @@
-namespace Voyara.Api.Authorization;
+namespace Voyara.Infrastructure.Identity;
 
-/// <summary>JWT bearer settings bound from configuration (section "Jwt").</summary>
+/// <summary>JWT settings bound from configuration (section "Jwt").</summary>
 public sealed class JwtOptions
 {
     /// <summary>Configuration section name.</summary>
     public const string SectionName = "Jwt";
+
+    /// <summary>Minimum signing key length in bytes required by HMAC-SHA256.</summary>
+    public const int MinSigningKeyLength = 32;
 
     /// <summary>Expected token issuer.</summary>
     public string Issuer { get; set; } = string.Empty;
@@ -15,6 +18,9 @@ public sealed class JwtOptions
     /// <summary>Token signing key; supplied per environment, never hard-coded.</summary>
     public string SigningKey { get; set; } = string.Empty;
 
-    /// <summary>Token lifetime in minutes.</summary>
+    /// <summary>Access token lifetime in minutes.</summary>
     public int ExpirationMinutes { get; set; } = 60;
+
+    /// <summary>Refresh token lifetime in days.</summary>
+    public int RefreshTokenExpirationDays { get; set; } = 14;
 }

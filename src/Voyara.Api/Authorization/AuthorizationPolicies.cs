@@ -15,9 +15,13 @@ public static class AuthorizationPolicies
     /// <summary>Restricts access to tour guides.</summary>
     public const string GuideOnly = "GuideOnly";
 
+    /// <summary>Requires any authenticated user, whatever the role.</summary>
+    public const string Authenticated = "Authenticated";
+
     /// <summary>Registers the role-based policies.</summary>
     public static void Register(AuthorizationOptions options)
     {
+        options.AddPolicy(Authenticated, policy => policy.RequireAuthenticatedUser());
         options.AddPolicy(AdminOnly, policy => policy.RequireRole(Roles.Admin));
         options.AddPolicy(TouristOnly, policy => policy.RequireRole(Roles.Tourist));
         options.AddPolicy(GuideOnly, policy => policy.RequireRole(Roles.TourGuide));
