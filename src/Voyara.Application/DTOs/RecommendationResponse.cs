@@ -68,3 +68,31 @@ public sealed record ActivityRecommendationResponse(
     int EstimatedVisitMinutes,
     double MatchScore,
     string Reason);
+
+/// <summary>
+/// Payload to submit tourist feedback or ratings on a recommended destination.
+/// </summary>
+/// <param name="DestinationId">The recommended destination identifier.</param>
+/// <param name="Score">Affinity rating or satisfaction score (0.0 to 5.0).</param>
+/// <param name="FeedbackReason">Optional feedback rationale or comments.</param>
+public sealed record SubmitRecommendationFeedbackRequest(
+    Guid DestinationId,
+    double Score,
+    string? FeedbackReason);
+
+/// <summary>
+/// Read model representing the recorded recommendation feedback audit entry.
+/// </summary>
+/// <param name="FeedbackId">The unique feedback log record identifier.</param>
+/// <param name="DestinationId">The recommended destination identifier.</param>
+/// <param name="UserId">The user identifier who submitted feedback.</param>
+/// <param name="Score">Recorded affinity or satisfaction score.</param>
+/// <param name="FeedbackReason">Recorded rationale or comments.</param>
+/// <param name="CreatedAt">Timestamp when feedback was submitted.</param>
+public sealed record RecommendationFeedbackResponse(
+    long FeedbackId,
+    Guid DestinationId,
+    Guid UserId,
+    double Score,
+    string? FeedbackReason,
+    DateTime CreatedAt);

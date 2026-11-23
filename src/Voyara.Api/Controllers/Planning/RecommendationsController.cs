@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Application.DTOs;
+using Voyara.Application.Recommendations.Commands.SubmitRecommendationFeedback;
 using Voyara.Application.Recommendations.Queries.GetActivityRecommendations;
 using Voyara.Application.Recommendations.Queries.GetDestinationRecommendations;
 using Voyara.Application.Recommendations.Queries.GetJourneyRecommendations;
@@ -59,5 +60,18 @@ public sealed class RecommendationsController : BaseApiController
         CancellationToken cancellationToken = default)
         => HandleResult(await Sender.Send(
             new GetActivityRecommendationsQuery(limit, cityId, categoryId),
+            cancellationToken));
+
+    /// <summary>
+    /// Submits tourist feedback or ratings for a recommended destination.
+    /// </summary>
+    /// <param name="request">Feedback payload containing destination, score, and optional reason.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("feedback")]
+    public async Task<IActionResult> SubmitRecommendationFeedback(
+        [FromBody] SubmitRecommendationFeedbackRequest request,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new SubmitRecommendationFeedbackCommand(request.DestinationId, request.Score, request.FeedbackReason),
             cancellationToken));
 }

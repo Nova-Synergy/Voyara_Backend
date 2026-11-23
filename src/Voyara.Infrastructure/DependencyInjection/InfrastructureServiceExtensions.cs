@@ -91,6 +91,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
         services.AddScoped<IJourneyRepository, JourneyRepository>();
         services.AddScoped<ITripRepository, TripRepository>();
+        services.AddScoped<IRecommendationFeedbackRepository, Persistence.Repositories.Recommendations.RecommendationFeedbackRepository>();
 
         return services;
     }
