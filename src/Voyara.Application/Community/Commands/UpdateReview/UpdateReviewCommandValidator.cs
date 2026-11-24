@@ -8,7 +8,7 @@ namespace Voyara.Application.Community.Commands.UpdateReview;
 /// <remarks>
 /// <para>
 /// Validates that the ReviewId is not empty, the Rating is between 1 and 5 inclusive,
-/// the Text is not empty and does not exceed 4000 characters, and the VisitDate is on or
+/// the Text is not empty and does not exceed 3000 characters, and the VisitDate is on or
 /// before the current UTC date.
 /// </para>
 /// </remarks>
@@ -25,7 +25,7 @@ public sealed class UpdateReviewCommandValidator
 
         RuleFor(x => x.Text)
             .NotEmpty()
-            .MaximumLength(4000);
+            .MaximumLength(3000);
 
         RuleFor(x => x.VisitDate)
             .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow));
