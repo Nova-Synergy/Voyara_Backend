@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Voyara.Domain.Entities.Catalog;
 using Voyara.Domain.Repositories.Catalog;
-using Voyara.Infrastructure.Persistence;
+
+namespace Voyara.Infrastructure.Persistence.Repositories.Catalog;
+
 public sealed class CategoryRepository : ICategoryRepository
 {
     private readonly VoyaraDbContext _context;
@@ -42,6 +44,7 @@ public sealed class CategoryRepository : ICategoryRepository
     {
         _context.Categories.Add(category);
     }
+
     public void Remove(Category category)
     {
         _context.Categories.Remove(category);

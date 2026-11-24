@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Voyara.Application.Abstractions;
+using Voyara.Application.Catalog;
 using Voyara.Domain.Repositories.Catalog;
 using Voyara.Domain.Repositories.Localization;
 using Voyara.SharedKernel.Results;
@@ -12,15 +13,18 @@ public sealed class SetDestinationTranslationCommandHandler
     private readonly IDestinationRepository _destinationRepository;
     private readonly ILanguageRepository _languageRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cache;
 
     public SetDestinationTranslationCommandHandler(
         IDestinationRepository destinationRepository,
         ILanguageRepository languageRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICacheService cache)
     {
         _destinationRepository = destinationRepository;
         _languageRepository = languageRepository;
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     public async Task<Result> Handle(
@@ -56,6 +60,9 @@ public sealed class SetDestinationTranslationCommandHandler
             request.CultureNotes);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Translated names and descriptions are what the search matches and displays.
+        await _cache.RemoveByTagAsync(CatalogCacheTags.Destinations, cancellationToken);
 
         return Result.Success();
     }

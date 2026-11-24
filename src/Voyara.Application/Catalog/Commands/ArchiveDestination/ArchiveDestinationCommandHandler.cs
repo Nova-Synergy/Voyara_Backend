@@ -10,12 +10,17 @@ public sealed class ArchiveDestinationCommandHandler : IRequestHandler<ArchiveDe
 {
     private readonly IDestinationRepository _destinationRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cache;
 
     /// <summary>Creates the handler.</summary>
-    public ArchiveDestinationCommandHandler(IDestinationRepository destinationRepository, IUnitOfWork unitOfWork)
+    public ArchiveDestinationCommandHandler(
+        IDestinationRepository destinationRepository,
+        IUnitOfWork unitOfWork,
+        ICacheService cache)
     {
         _destinationRepository = destinationRepository;
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     /// <inheritdoc />
@@ -30,6 +35,9 @@ public sealed class ArchiveDestinationCommandHandler : IRequestHandler<ArchiveDe
 
         destination.Archive();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // The destination appears in or disappears from public search results.
+        await _cache.RemoveByTagAsync(CatalogCacheTags.Destinations, cancellationToken);
 
         return Result.Success();
     }
