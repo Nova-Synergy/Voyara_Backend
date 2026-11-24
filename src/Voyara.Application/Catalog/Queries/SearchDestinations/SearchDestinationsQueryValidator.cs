@@ -35,12 +35,13 @@ public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchD
             .WithMessage("The language code is not well formed.")
             .When(query => !string.IsNullOrWhiteSpace(query.LanguageCode));
 
-        // Only languages the application actually supports (rows of the languages table) are accepted; this also
-        // bounds the number of distinct language values that can reach the cache.
+        // Only languages the application actually supports (rows of the languages table) are accepted. The resolved
+        // language is checked, so the English default used when `lang` is omitted must exist as well (it is seeded by
+        // LanguageConfiguration). This also bounds the number of distinct language values that can reach the cache.
         RuleFor(query => query.Language)
             .MustAsync((code, cancellationToken) => languageRepository.ExistsByCodeAsync(code, cancellationToken))
-            .WithMessage("The requested language is not supported.")
-            .When(query => !string.IsNullOrWhiteSpace(query.LanguageCode) && IsWellFormedLanguage(query.Language));
+            .WithMessage(query => $"The language '{query.Language}' is not supported.")
+            .When(query => IsWellFormedLanguage(query.Language));
 
         RuleFor(query => query.CountryId)
             .GreaterThan(0)

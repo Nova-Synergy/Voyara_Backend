@@ -22,14 +22,19 @@ public sealed class SearchDestinationsQueryHandler
         SearchDestinationsQuery request,
         CancellationToken cancellationToken)
     {
-        // The validator already range-checks the paging values; the offset is still computed with a wider type
-        // and re-checked so the handler can never produce a negative or overflowing offset, whoever calls it.
-        var offset = (long)(request.Page - 1) * request.PageSize;
+        // The validator already range-checks the paging values; the handler repeats the check before doing any
+        // arithmetic, so whoever calls it (the pipeline, another handler, a test) can never reach an overflow.
         if (request.Page < 1
             || request.Page > SearchDestinationsQueryValidator.MaxPage
             || request.PageSize < 1
-            || request.PageSize > SearchDestinationsQueryValidator.MaxPageSize
-            || offset > int.MaxValue)
+            || request.PageSize > SearchDestinationsQueryValidator.MaxPageSize)
+        {
+            return Result.Failure<PagedResult<DestinationSummaryResponse>>(SearchDestinationsErrors.PageOutOfRange);
+        }
+
+        // Widen before subtracting; after the range check above the offset is at most (MaxPage - 1) * MaxPageSize.
+        var offset = ((long)request.Page - 1) * request.PageSize;
+        if (offset > int.MaxValue)
         {
             return Result.Failure<PagedResult<DestinationSummaryResponse>>(SearchDestinationsErrors.PageOutOfRange);
         }

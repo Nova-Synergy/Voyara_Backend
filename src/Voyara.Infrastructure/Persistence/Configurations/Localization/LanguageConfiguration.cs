@@ -33,6 +33,10 @@ namespace Voyara.Infrastructure.Persistence.Configurations.Localization
             // Configures the IsRtl property.
             builder.Property(x => x.IsRtl)
                 .IsRequired();
+
+            // English is the fallback language of every translated text (translation fallback, default search
+            // language), so it must always exist.
+            builder.HasData(new { Code = "en", Name = "English", IsRtl = false });
         }
     }
 }
