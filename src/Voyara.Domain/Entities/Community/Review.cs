@@ -222,6 +222,10 @@ public sealed class Review : AggregateRoot
         if (visitDate > DateOnly.FromDateTime(DateTime.UtcNow))
             return Result.Failure(ReviewErrors.VisitDateInFuture);
 
+        // Capture the old state before changing the review.
+        var previousStatus = Status;
+        var previousRating = Rating;
+
         Rating = rating;
         Text = text.Trim();
         VisitDate = visitDate;
@@ -230,10 +234,22 @@ public sealed class Review : AggregateRoot
         ModeratedAt = null;
         RejectionReason = null;
 
+        RaiseDomainEvent(new ReviewUpdatedDomainEvent(
+            Guid.NewGuid(),
+            DateTimeOffset.UtcNow,
+            Id,
+            UserId,
+            DestinationId,
+            previousStatus,
+            previousRating,
+            Rating));
+
         return Result.Success();
     }
 
-    /// <summary>Soft-deletes the review if the supplied user owns it.</summary>
+    /// <summary>
+    /// Soft-deletes the review if the supplied user owns it.
+    /// </summary>
     public Result Delete(Guid userId)
     {
         if (userId == Guid.Empty || userId != UserId)
@@ -242,7 +258,20 @@ public sealed class Review : AggregateRoot
         if (IsDeleted)
             return Result.Failure(ReviewErrors.AlreadyDeleted);
 
+        // Capture the state before marking the review as deleted.
+        var previousStatus = Status;
+        var previousRating = Rating;
+
         IsDeleted = true;
+
+        RaiseDomainEvent(new ReviewDeletedDomainEvent(
+            Guid.NewGuid(),
+            DateTimeOffset.UtcNow,
+            Id,
+            UserId,
+            DestinationId,
+            previousStatus,
+            previousRating));
 
         return Result.Success();
     }

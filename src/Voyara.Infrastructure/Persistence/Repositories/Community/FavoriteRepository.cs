@@ -36,17 +36,6 @@ public sealed class FavoriteRepository : IFavoriteRepository
                 cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Favorite>> GetByUserIdAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default)
-    {
-        return await _context.Favorites
-            .AsNoTracking()
-            .Where(favorite => favorite.UserId == userId)
-            .OrderByDescending(favorite => favorite.CreatedAt)
-            .ToListAsync(cancellationToken);
-    }
-
     /// <inheritdoc />
     public async Task<IReadOnlyList<Favorite>> GetByUserIdAsync(
         Guid userId,

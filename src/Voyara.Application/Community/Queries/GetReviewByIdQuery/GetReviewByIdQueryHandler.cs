@@ -22,7 +22,6 @@ namespace Voyara.Application.Community.Queries.GetReviewById;
 /// Otherwise, returns the review data mapped to a ReviewResponse DTO via the From helper
 /// method.</para>
 /// </remarks>
-[AuthorizeRequest(Roles.Tourist)]
 public sealed class GetReviewByIdQueryHandler
     : IRequestHandler<GetReviewByIdQuery, Result<ReviewResponse>>
 {

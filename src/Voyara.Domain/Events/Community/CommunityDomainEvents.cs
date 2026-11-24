@@ -1,4 +1,5 @@
-﻿using Voyara.SharedKernel.Events;
+﻿using Voyara.Domain.Enums;
+using Voyara.SharedKernel.Events;
 
 namespace Voyara.Domain.Events.Community;
 
@@ -9,6 +10,33 @@ public sealed record ReviewSubmittedDomainEvent(
     Guid ReviewId,
     Guid UserId,
     Guid DestinationId) : IDomainEvent;
+
+/// <summary>
+/// Raised when a review is updated and returned to pending moderation.
+/// Carries the previous state so consumers can correct destination rating aggregates.
+/// </summary>
+public sealed record ReviewUpdatedDomainEvent(
+    Guid EventId,
+    DateTimeOffset OccurredOn,
+    Guid ReviewId,
+    Guid UserId,
+    Guid DestinationId,
+    ReviewStatus PreviousStatus,
+    int PreviousRating,
+    int NewRating) : IDomainEvent;
+
+/// <summary>
+/// Raised when a review is soft-deleted.
+/// Carries its previous status and rating so consumers can update destination rating aggregates.
+/// </summary>
+public sealed record ReviewDeletedDomainEvent(
+    Guid EventId,
+    DateTimeOffset OccurredOn,
+    Guid ReviewId,
+    Guid UserId,
+    Guid DestinationId,
+    ReviewStatus PreviousStatus,
+    int PreviousRating) : IDomainEvent;
 
 /// <summary>Raised when a review is approved. Used to notify the author and update the destination's rating.</summary>
 public sealed record ReviewApprovedDomainEvent(
