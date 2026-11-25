@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ using Microsoft.EntityFrameworkCore;
 using Voyara.Application.DTOs;
 using Voyara.Application.DTOs.Transportation;
 using Voyara.Application.Transportation;
@@ -55,6 +55,12 @@ public sealed class CityTransportReadRepository : ICityTransportReadRepository
 
         var total = await source.CountAsync(cancellationToken);
 
+        var offset = (long)(page - 1) * pageSize;
+        if (offset >= total)
+        {
+            return new PagedResult<CityTransportListItemDto>([], total, page, pageSize);
+        }
+
         var items = await (
                 from c in source
                 join t in _context.TransportTypes.AsNoTracking() on c.TransportTypeId equals t.Id
@@ -71,7 +77,7 @@ public sealed class CityTransportReadRepository : ICityTransportReadRepository
                     c.OperatingHours,
                     c.Routes.Count,
                     c.UpdatedAt ?? c.CreatedAt))
-            .Skip((page - 1) * pageSize)
+            .Skip((int)offset)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 

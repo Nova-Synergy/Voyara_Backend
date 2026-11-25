@@ -22,10 +22,12 @@ using Voyara.Infrastructure.Persistence.Repositories.Catalog;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
-using Voyara.Domain.Repositories.Transportation;
-using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Domain.Repositories.Localization;
 using Voyara.Infrastructure.Persistence.Repositories.Localization;
+using Voyara.Domain.Repositories.Moderation;
+using Voyara.Infrastructure.Persistence.Repositories.Moderation;
+using Voyara.Domain.Repositories.TripAndJourney;
+using Voyara.Infrastructure.Persistence.Repositories.TripAndJourney;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -91,12 +93,12 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<ICityTransportRepository, CityTransportRepository>();
         services.AddScoped<ITransportTypeRepository, TransportTypeRepository>();
+        services.AddScoped<IJourneyRepository, JourneyRepository>();
         services.AddScoped<ICityTransportReadRepository, CityTransportReadRepository>();
 
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
-        services.AddGuidesInfrastructure(configuration);
         return services;
     }
 }
