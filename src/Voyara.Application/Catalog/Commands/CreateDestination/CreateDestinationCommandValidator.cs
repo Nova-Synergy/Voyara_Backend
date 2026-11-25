@@ -5,17 +5,26 @@ namespace Voyara.Application.Catalog.Commands.CreateDestination;
 /// <summary>Validates destination creation requests.</summary>
 public sealed class CreateDestinationCommandValidator : AbstractValidator<CreateDestinationCommand>
 {
-    /// <summary>Creates the validator.</summary>
+    /// <summary>Initializes validation rules for creating a destination.</summary>
     public CreateDestinationCommandValidator()
     {
         RuleFor(command => command.Name)
             .NotEmpty()
             .MaximumLength(200);
+
         RuleFor(command => command.Description)
             .MaximumLength(4000);
+
         RuleFor(command => command.Latitude)
             .InclusiveBetween(-90d, 90d);
+
         RuleFor(command => command.Longitude)
             .InclusiveBetween(-180d, 180d);
+
+        RuleFor(command => command.CityId)
+            .GreaterThan(0);
+
+        RuleFor(command => command.CategoryId)
+            .NotEmpty();
     }
 }

@@ -38,9 +38,17 @@ public sealed class DestinationsController : BaseApiController
         => HandleResult(await Sender.Send(new GetDestinationByIdQuery(id), cancellationToken));
 
     /// <summary>Creates a new destination in Draft status.</summary>
+    /// <param name="request">Destination details, including existing city and category identifiers.</param>
+    /// <param name="cancellationToken">Token used to cancel the request.</param>
     [HttpPost]
     public async Task<IActionResult> Create(CreateDestinationRequest request, CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(
-            new CreateDestinationCommand(request.Name, request.Description, request.Latitude, request.Longitude),
+            new CreateDestinationCommand(
+                request.Name,
+                request.Description,
+                request.Latitude,
+                request.Longitude,
+                request.CityId,
+                request.CategoryId),
             cancellationToken));
 }

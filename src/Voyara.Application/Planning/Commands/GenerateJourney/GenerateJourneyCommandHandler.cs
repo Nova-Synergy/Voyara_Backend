@@ -71,28 +71,23 @@ public sealed class GenerateJourneyCommandHandler : IRequestHandler<GenerateJour
 
         // 3. Query candidate destinations from Catalog
         var maxStopsNeeded = duration * 4;
+        var searchCriteria = new DestinationSearchCriteria
+        {
+            Text = request.Country
+        };
+
         var candidates = await _destinationRepository.SearchAsync(
-            searchTerm: request.Country,
-            status: DestinationStatus.Published,
+            searchCriteria,
             skip: 0,
             take: maxStopsNeeded,
             cancellationToken: cancellationToken);
 
-        if (candidates.Count == 0)
+        // The repository exposes only public destinations. If the requested country text yields no matches,
+        // retry without a text filter while preserving the repository's visibility rules.
+        if (candidates.Count == 0 && !string.IsNullOrWhiteSpace(request.Country))
         {
             candidates = await _destinationRepository.SearchAsync(
-                searchTerm: null,
-                status: DestinationStatus.Published,
-                skip: 0,
-                take: maxStopsNeeded,
-                cancellationToken: cancellationToken);
-        }
-
-        if (candidates.Count == 0)
-        {
-            candidates = await _destinationRepository.SearchAsync(
-                searchTerm: null,
-                status: null,
+                new DestinationSearchCriteria(),
                 skip: 0,
                 take: maxStopsNeeded,
                 cancellationToken: cancellationToken);
@@ -116,7 +111,7 @@ public sealed class GenerateJourneyCommandHandler : IRequestHandler<GenerateJour
                 journey.AddItem(
                     dayNumber,
                     destination.Id,
-                    destination.CityId != Guid.Empty ? destination.CityId : null,
+                    destination.CityId,
                     window.StartTime,
                     window.EndTime,
                     transport);

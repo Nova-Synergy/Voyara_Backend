@@ -52,7 +52,16 @@ public sealed class AddJourneyItemCommandHandler : IRequestHandler<AddJourneyIte
             ? parsedMode
             : TransportMode.Walking;
 
-        var cityId = request.CityId ?? (destination.CityId != Guid.Empty ? destination.CityId : null);
+        // The destination is loaded from the repository, so its CityId is the authoritative relationship.
+        // Reject a caller-supplied city that conflicts with that relationship.
+        if (request.CityId.HasValue && request.CityId.Value != destination.CityId)
+        {
+            return Result.Failure<Guid>(Error.Validation(
+                "Journey.CityMismatch",
+                "The supplied city must match the selected destination's city."));
+        }
+
+        var cityId = destination.CityId;
 
         var item = journey.AddItem(
             request.DayNumber,

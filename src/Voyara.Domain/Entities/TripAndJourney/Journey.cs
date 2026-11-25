@@ -93,7 +93,7 @@ public sealed class Journey : AggregateRoot
     /// </summary>
     /// <param name="dayNumber">The 1-based day number to which the item is added.</param>
     /// <param name="destinationId">The catalog destination identifier.</param>
-    /// <param name="cityId">Optional city identifier.</param>
+    /// <param name="cityId">Optional integer identifier of the city associated with the destination.</param>
     /// <param name="startTime">Optional scheduled start time.</param>
     /// <param name="endTime">Optional scheduled end time.</param>
     /// <param name="transport">Mode of transportation to the stop.</param>
@@ -102,7 +102,7 @@ public sealed class Journey : AggregateRoot
     public JourneyItem AddItem(
         int dayNumber,
         Guid destinationId,
-        Guid? cityId = null,
+        int? cityId = null,
         TimeSpan? startTime = null,
         TimeSpan? endTime = null,
         TransportMode transport = TransportMode.Walking)

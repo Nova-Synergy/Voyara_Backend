@@ -6,7 +6,7 @@ namespace Voyara.Application.DTOs;
 public sealed record JourneyItemResponse(
     Guid Id,
     Guid DestinationId,
-    Guid? CityId,
+    int? CityId,
     int SortOrder,
     TimeSpan? StartTime,
     TimeSpan? EndTime,
