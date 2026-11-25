@@ -25,6 +25,8 @@ using Voyara.Domain.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Domain.Repositories.Localization;
 using Voyara.Infrastructure.Persistence.Repositories.Localization;
+using Voyara.Domain.Repositories.Identity;
+using Voyara.Infrastructure.Persistence.Repositories.Identity;
 
 using Voyara.Domain.Repositories.TripAndJourney;
 using Voyara.Infrastructure.Persistence.Repositories.TripAndJourney;
@@ -56,6 +58,8 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDestinationRepository, DestinationRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ITouristProfileRepository, TouristProfileRepository>();
+        services.AddScoped<IInterestRepository, InterestRepository>();
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
