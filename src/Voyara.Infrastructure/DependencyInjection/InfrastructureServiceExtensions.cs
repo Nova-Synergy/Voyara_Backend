@@ -69,9 +69,11 @@ public static class InfrastructureServiceExtensions
 
         services.AddSingleton<IFileStorage, LocalFileStorage>();
 
+        services.AddHttpClient<OllamaAiProvider>();
+
         services.AddSingleton<IAiProvider>(sp => new UsageLoggingAiProvider(
             new RateLimitedAiProvider(
-                new StubAiProvider(),
+                sp.GetRequiredService<OllamaAiProvider>(),
                 sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AiOptions>>().Value),
             sp.GetRequiredService<ILogger<UsageLoggingAiProvider>>()));
 
