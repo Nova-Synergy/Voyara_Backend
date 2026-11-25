@@ -6,7 +6,7 @@ using Voyara.Application.Catalog.Commands.UpdateCategory;
 using Voyara.Application.Catalog.Commands.DeactivateCategory;
 using Voyara.Application.Catalog.Queries.GetAllCategories;
 using Voyara.Application.Catalog.Queries.GetCategoryById;
-
+using Voyara.Application.Catalog.Commands.ActivateCategory;
 namespace Voyara.Api.Controllers.Catalog;
 
 [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
@@ -14,9 +14,18 @@ namespace Voyara.Api.Controllers.Catalog;
 public sealed class CategoriesController : BaseApiController
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] bool? isActive,
+        [FromQuery] string? search,
+        CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(
-            new GetAllCategoriesQuery(), cancellationToken));
+            new GetAllCategoriesQuery(isActive, search), cancellationToken));
+
+    [HttpPatch("{id:guid}/activate")]
+    public async Task<IActionResult> Activate(
+        Guid id, CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new ActivateCategoryCommand(id), cancellationToken));
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(

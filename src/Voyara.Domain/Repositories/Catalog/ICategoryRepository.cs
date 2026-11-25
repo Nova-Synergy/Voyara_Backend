@@ -4,6 +4,10 @@ namespace Voyara.Domain.Repositories.Catalog
 {
     public interface ICategoryRepository
     {
+        Task<IReadOnlyList<Category>> GetAllAsync(
+            bool? isActive = null,
+            string? search = null,
+            CancellationToken cancellationToken = default);
         Task<Category?> GetByIdAsync(
             Guid id,
             CancellationToken cancellationToken = default);

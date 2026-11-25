@@ -20,8 +20,11 @@ public sealed class GetAllCategoriesQueryHandler
         GetAllCategoriesQuery request,
         CancellationToken cancellationToken)
     {
-        var categories = await _categoryRepository.GetAllAsync(cancellationToken);
+        var categories = await _categoryRepository.GetAllAsync(
+            request.IsActive,
+            request.Search,
+            cancellationToken);
 
-        return categories;
+        return Result.Success(categories);
     }
 }

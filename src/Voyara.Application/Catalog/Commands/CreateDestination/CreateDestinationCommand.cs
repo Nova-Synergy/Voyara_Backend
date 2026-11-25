@@ -1,7 +1,16 @@
+using Voyara.Application.Abstractions.Authorization;
 using Voyara.Application.Abstractions.Messaging;
 
 namespace Voyara.Application.Catalog.Commands.CreateDestination;
 
-/// <summary>Creates a destination in Draft status; returns the destination identifier.</summary>
-public sealed record CreateDestinationCommand(string Name, string? Description, double Latitude, double Longitude)
-    : ICommand<Guid>;
+[AuthorizeRequest(Roles.Admin)]
+public sealed record CreateDestinationCommand(
+    int CityId,
+    Guid CategoryId,
+    int EstimatedVisitMinutes,
+    string LanguageCode,
+    string Name,
+    string? Description,
+    string? CultureNotes,
+    double Latitude,
+    double Longitude) : ICommand<Guid>;
