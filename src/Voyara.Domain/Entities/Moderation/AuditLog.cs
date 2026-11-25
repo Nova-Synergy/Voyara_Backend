@@ -50,13 +50,19 @@ public sealed class AuditLog
     {
     }
 
-    private AuditLog(Guid actorId, string action, string targetType, string targetId, AuditDetails details)
+    private AuditLog(
+        Guid actorId,
+        string action,
+        string targetType,
+        string targetId,
+        AuditDetails details,
+        DateTimeOffset timestamp)
     {
         ActorId = actorId;
         Action = action;
         TargetType = targetType;
         TargetId = targetId;
-        Timestamp = DateTimeOffset.UtcNow;
+        Timestamp = timestamp;
         Details = details;
     }
 
@@ -66,9 +72,15 @@ public sealed class AuditLog
     /// <param name="targetType">The kind of object affected (required).</param>
     /// <param name="targetId">The id of the affected object (required).</param>
     /// <param name="detailsJson">Optional JSON object with extra details; defaults to an empty object.</param>
+    /// <param name="occurredOn">The original time the action occurred, or the current UTC time when omitted.</param>
     /// <returns>The new entry, or the first rule that was broken.</returns>
     public static Result<AuditLog> Create(
-        Guid actorId, string action, string targetType, string targetId, string? detailsJson = null)
+        Guid actorId,
+        string action,
+        string targetType,
+        string targetId,
+        string? detailsJson = null,
+        DateTimeOffset? occurredOn = null)
     {
         if (actorId == Guid.Empty)
         {
@@ -114,6 +126,13 @@ public sealed class AuditLog
             return Result.Failure<AuditLog>(detailsResult.Error);
         }
 
-        return new AuditLog(actorId, trimmedAction, trimmedTargetType, trimmedTargetId, detailsResult.Value);
+        return new AuditLog(
+            actorId,
+            trimmedAction,
+            trimmedTargetType,
+            trimmedTargetId,
+            detailsResult.Value,
+            occurredOn?.ToUniversalTime() ?? DateTimeOffset.UtcNow);
+
     }
 }
