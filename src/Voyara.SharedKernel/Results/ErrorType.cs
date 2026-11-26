@@ -9,6 +9,9 @@ public enum ErrorType
     /// <summary>The requested resource does not exist.</summary>
     NotFound,
 
+    /// <summary>The caller is not authenticated or presented invalid credentials or tokens.</summary>
+    Unauthenticated,
+
     /// <summary>The current user is not permitted to perform the operation.</summary>
     Unauthorized,
 

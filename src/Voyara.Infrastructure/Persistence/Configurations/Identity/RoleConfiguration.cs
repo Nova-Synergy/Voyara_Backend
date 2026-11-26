@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Voyara.Application.Abstractions.Authorization;
 using Voyara.Domain.Entities.Identity;
 
 namespace Voyara.Infrastructure.Persistence.Configurations.Identity
@@ -28,6 +29,12 @@ namespace Voyara.Infrastructure.Persistence.Configurations.Identity
             // Guarantees that role names are unique.
             builder.HasIndex(x => x.Name)
                 .IsUnique();
+
+            // Seeds the application roles (ids are fixed so migrations stay deterministic).
+            builder.HasData(
+                new { Id = 1, Name = Roles.Tourist },
+                new { Id = 2, Name = Roles.TourGuide },
+                new { Id = 3, Name = Roles.Admin });
         }
     }
 }

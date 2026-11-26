@@ -30,7 +30,7 @@ public sealed class AuthorizationBehavior<TRequest, TResponse> : IPipelineBehavi
         if (!_currentUser.IsAuthenticated)
         {
             return Task.FromResult(PipelineResultFactory.CreateFailure<TResponse>(
-                Error.Unauthorized("Authorization.Anonymous", "Authentication is required.")));
+                Error.Unauthenticated("Authorization.Anonymous", "Authentication is required.")));
         }
 
         if (attribute.Roles is { Length: > 0 } roles)

@@ -25,7 +25,7 @@ public sealed class CurrentUser : ICurrentUser
     }
 
     /// <inheritdoc />
-    public string? Email => Principal?.FindFirstValue(ClaimTypes.Email);
+    public string? Email => Principal?.FindFirstValue(ClaimTypes.Email) ?? Principal?.FindFirstValue("email");
 
     /// <inheritdoc />
     public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;

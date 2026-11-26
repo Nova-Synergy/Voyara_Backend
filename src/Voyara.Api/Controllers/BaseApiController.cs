@@ -30,6 +30,7 @@ public abstract class BaseApiController : ControllerBase
         {
             ErrorType.Validation => StatusCodes.Status400BadRequest,
             ErrorType.NotFound => StatusCodes.Status404NotFound,
+            ErrorType.Unauthenticated => StatusCodes.Status401Unauthorized,
             ErrorType.Unauthorized => StatusCodes.Status403Forbidden,
             ErrorType.Conflict => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError

@@ -1,4 +1,4 @@
-﻿using Voyara.Domain.Entities.Identity;
+using Voyara.Domain.Entities.Identity;
 
 namespace Voyara.Domain.Repositories.Identity
 {
@@ -8,5 +8,7 @@ namespace Voyara.Domain.Repositories.Identity
     /// </summary>
     public interface IRoleRepository
     {
+        /// <summary>Finds a role by name (case-insensitive).</summary>
+        Task<Role?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     }
 }

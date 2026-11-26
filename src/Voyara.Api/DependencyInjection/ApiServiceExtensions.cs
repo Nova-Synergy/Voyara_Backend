@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Voyara.Api.Authorization;
+using Voyara.Infrastructure.Identity;
 
 namespace Voyara.Api.DependencyInjection;
 
@@ -18,6 +19,14 @@ public static class ApiServiceExtensions
 
         var jwt = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
 
+        // Fail fast: running without a strong signing key would make every login fail at runtime.
+        if (System.Text.Encoding.UTF8.GetByteCount(jwt.SigningKey ?? string.Empty) < JwtOptions.MinSigningKeyLength)
+        {
+            throw new InvalidOperationException(
+                $"Configuration '{JwtOptions.SectionName}:SigningKey' must be at least {JwtOptions.MinSigningKeyLength} bytes. " +
+                "Supply it per environment (user-secrets or the Jwt__SigningKey environment variable).");
+        }
+
         services
             .AddAuthentication(options =>
             {
@@ -26,17 +35,21 @@ public static class ApiServiceExtensions
             })
             .AddJwtBearer(options =>
             {
+                // Keep claim names exactly as issued ("sub", "email", "role") instead of remapping them.
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = jwt.Issuer,
                     ValidAudience = jwt.Audience,
-                    IssuerSigningKey = string.IsNullOrWhiteSpace(jwt.SigningKey)
-                        ? null
-                        : new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
                     ValidateIssuer = !string.IsNullOrWhiteSpace(jwt.Issuer),
                     ValidateAudience = !string.IsNullOrWhiteSpace(jwt.Audience),
-                    ValidateIssuerSigningKey = !string.IsNullOrWhiteSpace(jwt.SigningKey),
-                    ValidateLifetime = true
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ValidAlgorithms = [SecurityAlgorithms.HmacSha256],
+                    ClockSkew = TimeSpan.FromSeconds(30),
+                    NameClaimType = "sub",
+                    RoleClaimType = JwtTokenService.RoleClaimType
                 };
             });
 

@@ -28,6 +28,9 @@ public sealed record Error
     /// <summary>Creates a not-found error.</summary>
     public static Error NotFound(string code, string description) => new(code, description, ErrorType.NotFound);
 
+    /// <summary>Creates an authentication error (missing or invalid credentials or tokens).</summary>
+    public static Error Unauthenticated(string code, string description) => new(code, description, ErrorType.Unauthenticated);
+
     /// <summary>Creates an authorization error.</summary>
     public static Error Unauthorized(string code, string description) => new(code, description, ErrorType.Unauthorized);
 

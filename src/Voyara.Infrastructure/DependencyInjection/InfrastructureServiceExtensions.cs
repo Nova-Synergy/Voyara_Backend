@@ -5,7 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using Voyara.Application.Abstractions;
+using Voyara.Application.Abstractions.Identity;
 using Voyara.Domain.Repositories.Catalog;
+using Voyara.Domain.Repositories.Identity;
+using Voyara.Infrastructure.Persistence.Repositories.Identity;
 using Voyara.Domain.Repositories.Transportation;
 using Voyara.Domain.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Ai;
@@ -42,6 +45,7 @@ public static class InfrastructureServiceExtensions
         services.AddOptions<RedisOptions>().Bind(configuration.GetSection(RedisOptions.SectionName));
         services.AddOptions<FileStorageOptions>().Bind(configuration.GetSection(FileStorageOptions.SectionName));
         services.AddOptions<AiOptions>().Bind(configuration.GetSection(AiOptions.SectionName));
+        services.AddOptions<JwtOptions>().Bind(configuration.GetSection(JwtOptions.SectionName));
 
         services.AddScoped<SaveChangesInterceptor, AuditInterceptor>();
         services.AddScoped<SaveChangesInterceptor, OutboxInterceptor>();
@@ -56,6 +60,11 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDestinationRepository, DestinationRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
+        services.AddSingleton<ITokenService, JwtTokenService>();
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
