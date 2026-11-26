@@ -77,4 +77,47 @@ public sealed class AssistantController : BaseApiController
         => HandleResult(await Sender.Send(
             new ArchiveConversationCommand(id),
             cancellationToken));
+
+    /// <summary>
+    /// Requests interactive conversational travel recommendations from the assistant.
+    /// </summary>
+    /// <param name="id">The conversation identifier.</param>
+    /// <param name="request">Optional recommendation filters and inquiry prompt.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("conversations/{id:guid}/recommendations")]
+    public async Task<IActionResult> RequestRecommendations(
+        Guid id,
+        [FromBody] RequestRecommendationPromptRequest? request,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new RequestTravelRecommendationsCommand(
+                id,
+                request?.Prompt,
+                request?.CityId,
+                request?.CategoryId,
+                request?.Limit ?? 3),
+            cancellationToken));
+
+    /// <summary>
+    /// Updates or applies extracted travel requirements to an ongoing planning conversation.
+    /// </summary>
+    /// <param name="id">The conversation identifier.</param>
+    /// <param name="request">Structured trip requirements payload.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("conversations/{id:guid}/requirements")]
+    public async Task<IActionResult> UpdateRequirements(
+        Guid id,
+        [FromBody] UpdateRequirementsRequest request,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new UpdateConversationRequirementsCommand(
+                id,
+                request.Country,
+                request.DurationDays,
+                request.Interests,
+                request.BudgetAmount,
+                request.BudgetCurrency,
+                request.TravelStyle,
+                request.TransportPreference),
+            cancellationToken));
 }
