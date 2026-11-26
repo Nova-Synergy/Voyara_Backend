@@ -11,7 +11,7 @@ public sealed record DestinationSummaryResponse(
     double Latitude,
     double Longitude,
     string Status,
-    int CityId,
+    Guid CityId,
     Guid CategoryId,
     double AverageRating,
     int ReviewCount,

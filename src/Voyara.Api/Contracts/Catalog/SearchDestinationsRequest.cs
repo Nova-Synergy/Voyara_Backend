@@ -12,10 +12,10 @@ public sealed record SearchDestinationsRequest
     public string? Lang { get; init; }
 
     /// <summary>Only destinations of cities in this country.</summary>
-    public int? CountryId { get; init; }
+    public Guid? CountryId { get; init; }
 
     /// <summary>Only destinations in this city.</summary>
-    public int? CityId { get; init; }
+    public Guid? CityId { get; init; }
 
     /// <summary>Only destinations of this category.</summary>
     public Guid? CategoryId { get; init; }

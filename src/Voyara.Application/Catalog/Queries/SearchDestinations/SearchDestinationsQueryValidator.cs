@@ -44,11 +44,11 @@ public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchD
             .When(query => IsWellFormedLanguage(query.Language));
 
         RuleFor(query => query.CountryId)
-            .GreaterThan(0)
+            .NotEqual(Guid.Empty)
             .When(query => query.CountryId.HasValue);
 
         RuleFor(query => query.CityId)
-            .GreaterThan(0)
+            .NotEqual(Guid.Empty)
             .When(query => query.CityId.HasValue);
 
         RuleFor(query => query.CategoryId)

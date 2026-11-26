@@ -26,8 +26,8 @@ namespace Voyara.Application.Catalog.Queries.SearchDestinations;
 public sealed record SearchDestinationsQuery(
     string? SearchTerm,
     string? LanguageCode,
-    int? CountryId,
-    int? CityId,
+    Guid? CountryId,
+    Guid? CityId,
     Guid? CategoryId,
     double? MinRating,
     decimal? MaxPrice,

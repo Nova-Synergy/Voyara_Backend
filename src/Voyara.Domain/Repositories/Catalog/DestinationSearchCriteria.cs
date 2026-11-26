@@ -16,10 +16,10 @@ public sealed record DestinationSearchCriteria
     public string? Text { get; init; }
 
     /// <summary>Restricts results to destinations of cities in this country; null means any country.</summary>
-    public int? CountryId { get; init; }
+    public Guid? CountryId { get; init; }
 
     /// <summary>Restricts results to destinations in this city; null means any city.</summary>
-    public int? CityId { get; init; }
+    public Guid? CityId { get; init; }
 
     /// <summary>Restricts results to destinations of this category; null means any category.</summary>
     public Guid? CategoryId { get; init; }

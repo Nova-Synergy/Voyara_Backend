@@ -93,16 +93,17 @@ public sealed class Journey : AggregateRoot
     /// </summary>
     /// <param name="dayNumber">The 1-based day number to which the item is added.</param>
     /// <param name="destinationId">The catalog destination identifier.</param>
-    /// <param name="cityId">Optional integer identifier of the city associated with the destination.</param>
+    /// <param name="cityId">Optional GUID identifier of the city associated with the destination.</param>
     /// <param name="startTime">Optional scheduled start time.</param>
     /// <param name="endTime">Optional scheduled end time.</param>
     /// <param name="transport">Mode of transportation to the stop.</param>
     /// <returns>The created <see cref="JourneyItem"/>.</returns>
     /// <exception cref="InvalidOperationException">Thrown when <paramref name="dayNumber"/> does not exist.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="cityId"/> is an empty GUID.</exception>
     public JourneyItem AddItem(
         int dayNumber,
         Guid destinationId,
-        int? cityId = null,
+        Guid? cityId = null,
         TimeSpan? startTime = null,
         TimeSpan? endTime = null,
         TransportMode transport = TransportMode.Walking)

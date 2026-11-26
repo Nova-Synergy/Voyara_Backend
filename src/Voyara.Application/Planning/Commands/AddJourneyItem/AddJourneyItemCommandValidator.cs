@@ -25,9 +25,8 @@ public sealed class AddJourneyItemCommandValidator : AbstractValidator<AddJourne
             .WithMessage("Day number must be at least 1.");
 
         RuleFor(x => x.CityId)
-            .GreaterThan(0)
-            .When(x => x.CityId.HasValue)
-            .WithMessage("City ID must be greater than zero.");
+            .Must(cityId => !cityId.HasValue || cityId.Value != Guid.Empty)
+            .WithMessage("City ID must be a non-empty GUID when supplied.");
 
         RuleFor(x => x)
             .Must(x => !x.StartTime.HasValue || !x.EndTime.HasValue || x.EndTime.Value >= x.StartTime.Value)

@@ -22,7 +22,7 @@ public sealed class CreateDestinationCommandValidator : AbstractValidator<Create
             .InclusiveBetween(-180d, 180d);
 
         RuleFor(command => command.CityId)
-            .GreaterThan(0);
+            .NotEmpty();
 
         RuleFor(command => command.CategoryId)
             .NotEmpty();

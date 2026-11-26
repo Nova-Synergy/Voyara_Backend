@@ -17,10 +17,11 @@ public sealed class CityRepository : ICityRepository
     }
 
     /// <inheritdoc />
-    public Task<City?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public Task<City?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return _context.Cities
             .AsNoTracking()
+            .Include(city => city.Country)
             .FirstOrDefaultAsync(city => city.Id == id, cancellationToken);
     }
 }
