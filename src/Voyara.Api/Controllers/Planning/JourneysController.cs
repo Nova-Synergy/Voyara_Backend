@@ -1,5 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Api.Contracts.Planning;
+using Voyara.Application.CostEstimation.Commands.GenerateCostEstimate;
+using Voyara.Application.CostEstimation.Queries.ConvertCostBreakdown;
+using Voyara.Application.CostEstimation.Queries.EstimateAccommodationCost;
+using Voyara.Application.CostEstimation.Queries.EstimateActivitiesCost;
+using Voyara.Application.CostEstimation.Queries.EstimateTransportationCost;
+using Voyara.Application.CostEstimation.Queries.GetJourneyCostBreakdown;
 using Voyara.Application.Planning.Commands.AddJourneyItem;
 using Voyara.Application.Planning.Commands.CustomizeJourney;
 using Voyara.Application.Planning.Commands.GenerateJourney;
@@ -133,4 +139,86 @@ public sealed class JourneysController : BaseApiController
         [FromBody] CustomizeJourneyRequest request,
         CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new CustomizeJourneyCommand(id, request.Instruction), cancellationToken));
+
+    /// <summary>
+    /// Calculates transportation cost estimates for a journey itinerary.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="currency">Optional currency code (defaults to USD).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost/transportation")]
+    public async Task<IActionResult> EstimateTransportationCost(
+        Guid id,
+        [FromQuery] string? currency,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new EstimateTransportationCostQuery(id, currency), cancellationToken));
+
+    /// <summary>
+    /// Calculates accommodation cost estimates for a journey itinerary.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="currency">Optional currency code (defaults to USD).</param>
+    /// <param name="tier">Optional lodging tier (e.g. Budget, Standard, Luxury).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost/accommodation")]
+    public async Task<IActionResult> EstimateAccommodationCost(
+        Guid id,
+        [FromQuery] string? currency,
+        [FromQuery] string? tier,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new EstimateAccommodationCostQuery(id, currency, tier), cancellationToken));
+
+    /// <summary>
+    /// Calculates activities and tickets cost estimates for a journey itinerary.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="currency">Optional currency code (defaults to USD).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost/activities")]
+    public async Task<IActionResult> EstimateActivitiesCost(
+        Guid id,
+        [FromQuery] string? currency,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new EstimateActivitiesCostQuery(id, currency), cancellationToken));
+
+    /// <summary>
+    /// Generates and records an itemized cost estimate snapshot for a journey itinerary.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="request">Optional estimation preferences (currency and lodging tier).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("{id:guid}/cost-estimate")]
+    public async Task<IActionResult> GenerateCostEstimate(
+        Guid id,
+        [FromBody] GenerateCostEstimateRequest? request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new GenerateCostEstimateCommand(id, request?.Currency, request?.LodgingTier),
+            cancellationToken));
+
+    /// <summary>
+    /// Retrieves the comprehensive cost breakdown and itemized estimates for a journey.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="currency">Optional target currency code (defaults to USD).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost-breakdown")]
+    public async Task<IActionResult> GetCostBreakdown(
+        Guid id,
+        [FromQuery] string? currency,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new GetJourneyCostBreakdownQuery(id, currency), cancellationToken));
+
+    /// <summary>
+    /// Converts a journey's cost breakdown to a requested target currency using current exchange rates.
+    /// </summary>
+    /// <param name="id">The unique identifier of the journey.</param>
+    /// <param name="targetCurrency">The ISO currency code to convert into (e.g. EUR, GBP).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("{id:guid}/cost-breakdown/convert")]
+    public async Task<IActionResult> ConvertCostBreakdown(
+        Guid id,
+        [FromQuery] string targetCurrency,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(new ConvertCostBreakdownQuery(id, targetCurrency), cancellationToken));
 }

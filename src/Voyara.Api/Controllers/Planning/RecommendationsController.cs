@@ -1,0 +1,77 @@
+using Microsoft.AspNetCore.Mvc;
+using Voyara.Application.DTOs;
+using Voyara.Application.Recommendations.Commands.SubmitRecommendationFeedback;
+using Voyara.Application.Recommendations.Queries.GetActivityRecommendations;
+using Voyara.Application.Recommendations.Queries.GetDestinationRecommendations;
+using Voyara.Application.Recommendations.Queries.GetJourneyRecommendations;
+
+namespace Voyara.Api.Controllers.Planning;
+
+/// <summary>
+/// AI and popularity-based recommendation endpoints.
+/// </summary>
+[Route("api/v1/[controller]")]
+public sealed class RecommendationsController : BaseApiController
+{
+    /// <summary>
+    /// Retrieves personalized or trending destination recommendations.
+    /// </summary>
+    /// <param name="limit">Maximum recommendations to return (defaults to 5).</param>
+    /// <param name="cityId">Optional city filter.</param>
+    /// <param name="categoryId">Optional category filter.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("destinations")]
+    public async Task<IActionResult> GetDestinationRecommendations(
+        [FromQuery] int limit = 5,
+        [FromQuery] Guid? cityId = null,
+        [FromQuery] Guid? categoryId = null,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new GetDestinationRecommendationsQuery(limit, cityId, categoryId),
+            cancellationToken));
+
+    /// <summary>
+    /// Retrieves personalized or trending journey recommendations.
+    /// </summary>
+    /// <param name="limit">Maximum recommendations to return (defaults to 5).</param>
+    /// <param name="totalDays">Optional duration filter in days.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("journeys")]
+    public async Task<IActionResult> GetJourneyRecommendations(
+        [FromQuery] int limit = 5,
+        [FromQuery] int? totalDays = null,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new GetJourneyRecommendationsQuery(limit, totalDays),
+            cancellationToken));
+
+    /// <summary>
+    /// Retrieves personalized or trending activity recommendations.
+    /// </summary>
+    /// <param name="limit">Maximum recommendations to return (defaults to 5).</param>
+    /// <param name="cityId">Optional city filter.</param>
+    /// <param name="categoryId">Optional category filter.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("activities")]
+    public async Task<IActionResult> GetActivityRecommendations(
+        [FromQuery] int limit = 5,
+        [FromQuery] Guid? cityId = null,
+        [FromQuery] Guid? categoryId = null,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new GetActivityRecommendationsQuery(limit, cityId, categoryId),
+            cancellationToken));
+
+    /// <summary>
+    /// Submits tourist feedback or ratings for a recommended destination.
+    /// </summary>
+    /// <param name="request">Feedback payload containing destination, score, and optional reason.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("feedback")]
+    public async Task<IActionResult> SubmitRecommendationFeedback(
+        [FromBody] SubmitRecommendationFeedbackRequest request,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new SubmitRecommendationFeedbackCommand(request.DestinationId, request.Score, request.FeedbackReason),
+            cancellationToken));
+}
