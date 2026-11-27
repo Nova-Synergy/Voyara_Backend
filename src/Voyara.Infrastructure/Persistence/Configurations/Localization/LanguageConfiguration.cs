@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Voyara.Domain.Entities.Localization;
 
@@ -34,8 +34,8 @@ namespace Voyara.Infrastructure.Persistence.Configurations.Localization
             builder.Property(x => x.IsRtl)
                 .IsRequired();
 
-            // English is the fallback language of every translated text (translation fallback, default search
-            // language), so it must always exist.
+            // English is the fallback language for search and translation mapping. Keeping this in HasData
+            // lets EF Core represent the seed in model metadata and generate provider-specific SQL itself.
             builder.HasData(new { Code = "en", Name = "English", IsRtl = false });
         }
     }

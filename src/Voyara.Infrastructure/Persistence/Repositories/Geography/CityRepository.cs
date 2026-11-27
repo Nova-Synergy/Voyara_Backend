@@ -21,6 +21,14 @@ public sealed class CityRepository : ICityRepository
     {
         return _context.Cities
             .AsNoTracking()
+            .FirstOrDefaultAsync(city => city.Id == id, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<City?> GetByIdWithCountryAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return _context.Cities
+            .AsNoTracking()
             .Include(city => city.Country)
             .FirstOrDefaultAsync(city => city.Id == id, cancellationToken);
     }

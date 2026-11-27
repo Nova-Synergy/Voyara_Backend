@@ -14,14 +14,28 @@ namespace Voyara.Domain.Repositories.Catalog
         Task<Destination?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Searches the public catalog: only published destinations located in an active city of an
-        /// active country are returned. Results are read-only and include translations and images.
+        /// Searches the public catalog: only published destinations located in active cities of active
+        /// countries and active categories are returned. Results are read-only and include translations and images.
         /// </summary>
         /// <param name="criteria">The search specification.</param>
         /// <param name="skip">Number of results to skip.</param>
         /// <param name="take">Maximum number of results to return.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         Task<IReadOnlyList<Destination>> SearchAsync(
+            DestinationSearchCriteria criteria,
+            int skip,
+            int take,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the total count and requested page from one serializable database transaction.
+        /// Name sorting is performed with ordinal in-memory comparison after filtering to avoid provider collation differences.
+        /// </summary>
+        /// <param name="criteria">The search specification.</param>
+        /// <param name="skip">Number of results to skip.</param>
+        /// <param name="take">Maximum number of results to return.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task<(IReadOnlyList<Destination> Items, int TotalCount)> SearchPageAsync(
             DestinationSearchCriteria criteria,
             int skip,
             int take,

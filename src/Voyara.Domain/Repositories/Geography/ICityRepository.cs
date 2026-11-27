@@ -10,4 +10,10 @@ public interface ICityRepository
     /// <param name="cancellationToken">Token used to cancel the database operation.</param>
     /// <returns>The city when it exists and is not soft-deleted; otherwise, <see langword="null"/>.</returns>
     Task<City?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets a city by identifier and explicitly loads its owning country.</summary>
+    /// <param name="id">The identifier of the city to retrieve.</param>
+    /// <param name="cancellationToken">Token used to cancel the database operation.</param>
+    /// <returns>The city with its country loaded, or <see langword="null"/> when it does not exist.</returns>
+    Task<City?> GetByIdWithCountryAsync(Guid id, CancellationToken cancellationToken = default);
 }

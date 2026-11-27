@@ -45,7 +45,8 @@ public static class DestinationSummaryMapping
     /// <summary>
     /// Picks the translation to display, in this exact order: (1) the requested language, (2) English,
     /// (3) the translation with the lowest language code (ordinal). The last rule makes the choice deterministic
-    /// regardless of load order, and it is the same rule the SQL name sort uses. Returns null for an empty list.
+    /// regardless of load order and matches the translation selection used by destination name sorting.
+    /// Returns null for an empty list.
     /// </summary>
     public static DestinationTranslation? SelectTranslation(
         IEnumerable<DestinationTranslation> translations,

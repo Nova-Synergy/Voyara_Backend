@@ -19,9 +19,6 @@ public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchD
     private static readonly Regex LanguageCodePattern =
         new("^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    private static readonly Regex CurrencyPattern =
-        new("^[a-zA-Z]{3}$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
     /// <summary>Creates the validator.</summary>
     public SearchDestinationsQueryValidator(ILanguageRepository languageRepository)
     {
@@ -69,8 +66,8 @@ public sealed class SearchDestinationsQueryValidator : AbstractValidator<SearchD
             .When(query => query.MaxPrice.HasValue);
 
         RuleFor(query => query.Currency)
-            .Must(currency => CurrencyPattern.IsMatch(currency!.Trim()))
-            .WithMessage("Currency must be a 3-letter ISO 4217 code.")
+            .Must(SearchCurrencyCodes.IsSupported)
+            .WithMessage($"Currency must be an active ISO 4217 code supported by the application. Supported values: {string.Join(", ", SearchCurrencyCodes.All)}.")
             .When(query => !string.IsNullOrWhiteSpace(query.Currency));
 
         RuleFor(query => query.MaxPrice)

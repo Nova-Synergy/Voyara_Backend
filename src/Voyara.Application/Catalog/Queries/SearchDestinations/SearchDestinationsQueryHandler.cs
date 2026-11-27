@@ -53,18 +53,15 @@ public sealed class SearchDestinationsQueryHandler
             SortDirection = request.SortDirection
         };
 
-        var destinations = await _destinationRepository.SearchAsync(
+        var searchPage = await _destinationRepository.SearchPageAsync(
             criteria, (int)offset, request.PageSize, cancellationToken);
 
-        // The count and the page are two queries; a catalog change between them can make the total off by a few
-        // items for that one response, which is acceptable for a browse/search list.
-        var totalCount = await _destinationRepository.CountAsync(criteria, cancellationToken);
-
-        var items = destinations
+        var items = searchPage.Items
             .Select(destination => destination.ToSummary(request.Language))
             .OfType<DestinationSummaryResponse>()
             .ToList();
 
-        return new PagedResult<DestinationSummaryResponse>(items, totalCount, request.Page, request.PageSize);
+        return new PagedResult<DestinationSummaryResponse>(
+            items, searchPage.TotalCount, request.Page, request.PageSize);
     }
 }

@@ -21,8 +21,6 @@ using Voyara.Infrastructure.Persistence.Repositories.Catalog;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
-using Voyara.Domain.Repositories.Transportation;
-using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Domain.Repositories.Localization;
 using Voyara.Domain.Repositories.Geography;
 using Voyara.Infrastructure.Persistence.Repositories.Localization;

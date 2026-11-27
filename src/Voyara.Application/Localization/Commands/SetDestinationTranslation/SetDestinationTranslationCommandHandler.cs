@@ -1,32 +1,34 @@
-﻿using MediatR;
+using MediatR;
 using Voyara.Application.Abstractions;
-using Voyara.Application.Catalog;
 using Voyara.Domain.Repositories.Catalog;
 using Voyara.Domain.Repositories.Localization;
 using Voyara.SharedKernel.Results;
 
 namespace Voyara.Application.Localization.Commands.SetDestinationTranslation;
 
+/// <summary>Creates or updates a destination translation and persists it through the unit of work.</summary>
 public sealed class SetDestinationTranslationCommandHandler
     : IRequestHandler<SetDestinationTranslationCommand, Result>
 {
     private readonly IDestinationRepository _destinationRepository;
     private readonly ILanguageRepository _languageRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICacheService _cache;
 
+    /// <summary>Initializes the handler.</summary>
+    /// <param name="destinationRepository">Repository used to load the destination.</param>
+    /// <param name="languageRepository">Repository used to verify the language.</param>
+    /// <param name="unitOfWork">Unit of work used to persist the translation and invalidate search cache.</param>
     public SetDestinationTranslationCommandHandler(
         IDestinationRepository destinationRepository,
         ILanguageRepository languageRepository,
-        IUnitOfWork unitOfWork,
-        ICacheService cache)
+        IUnitOfWork unitOfWork)
     {
         _destinationRepository = destinationRepository;
         _languageRepository = languageRepository;
         _unitOfWork = unitOfWork;
-        _cache = cache;
     }
 
+    /// <inheritdoc />
     public async Task<Result> Handle(
         SetDestinationTranslationCommand request,
         CancellationToken cancellationToken)
@@ -62,7 +64,6 @@ public sealed class SetDestinationTranslationCommandHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Translated names and descriptions are what the search matches and displays.
-        await _cache.RemoveByTagAsync(CatalogCacheTags.Destinations, cancellationToken);
 
         return Result.Success();
     }

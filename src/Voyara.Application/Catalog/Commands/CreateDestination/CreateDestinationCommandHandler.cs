@@ -42,7 +42,7 @@ public sealed class CreateDestinationCommandHandler : IRequestHandler<CreateDest
             return Result.Failure<Guid>(location.Error);
         }
 
-        var city = await _cityRepository.GetByIdAsync(request.CityId, cancellationToken);
+        var city = await _cityRepository.GetByIdWithCountryAsync(request.CityId, cancellationToken);
         if (city is null)
         {
             return Result.Failure<Guid>(Error.NotFound(
@@ -57,17 +57,24 @@ public sealed class CreateDestinationCommandHandler : IRequestHandler<CreateDest
                 "A destination can only be assigned to an active city."));
         }
 
-        // Verify that the selected city has a real, matching, active country relationship.
-        if (city.Country is null
-            || city.CountryId == Guid.Empty
-            || city.Country.Id != city.CountryId)
+        if (city.CountryId == Guid.Empty)
         {
             return Result.Failure<Guid>(Error.Validation(
                 "City.CountryRelationshipInvalid",
                 "The selected city is not linked to a valid country."));
         }
 
-        if (!city.Country.IsActive)
+        // GetByIdWithCountryAsync explicitly includes the Country navigation; this handler does not rely on
+        // repository-wide AutoInclude or lazy-loading configuration.
+        var country = city.Country;
+        if (country is null || country.Id != city.CountryId)
+        {
+            return Result.Failure<Guid>(Error.Validation(
+                "City.CountryRelationshipInvalid",
+                "The selected city is not linked to an existing country."));
+        }
+
+        if (!country.IsActive)
         {
             return Result.Failure<Guid>(Error.Validation(
                 "Country.Inactive",
