@@ -21,13 +21,15 @@ using Voyara.Infrastructure.Persistence.Repositories.Catalog;
 using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
 using Voyara.Infrastructure.Recommendations;
-using Voyara.Domain.Repositories.Transportation;
-using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Domain.Repositories.Localization;
+using Voyara.Domain.Repositories.Geography;
 using Voyara.Infrastructure.Persistence.Repositories.Localization;
+using Voyara.Infrastructure.Persistence.Repositories.Geography;
 
 using Voyara.Domain.Repositories.TripAndJourney;
 using Voyara.Infrastructure.Persistence.Repositories.TripAndJourney;
+using Voyara.Domain.Repositories.Moderation;
+using Voyara.Infrastructure.Persistence.Repositories.Moderation;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -56,6 +58,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDestinationRepository, DestinationRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ICityRepository, CityRepository>();
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();

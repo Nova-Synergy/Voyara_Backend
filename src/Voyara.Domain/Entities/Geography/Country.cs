@@ -1,21 +1,17 @@
-﻿using Voyara.SharedKernel.Entities;
+using Voyara.SharedKernel.Entities;
 
 namespace Voyara.Domain.Entities.Geography
 {
     /// <summary>
     /// Represents a country that groups cities and carries the defaults used for its destinations.
+    /// Its identity is the GUID inherited from <see cref="AuditableEntity"/>.
     /// </summary>
     public sealed class Country : AuditableEntity
     {
         /// <summary>
-        /// Gets the database-generated identifier (hides the Guid Id of the base class).
-        /// </summary>
-        public new int Id { get; private set; }
-
-        /// <summary>
         /// Gets the ISO 3166-1 alpha-2 country code, for example EG.
         /// </summary>
-        public string IsCode { get; private set; } = string.Empty;
+        public string IsoCode { get; private set; } = string.Empty;
 
         /// <summary>
         /// Gets the ISO 4217 currency code used by default, for example EGP.
@@ -50,9 +46,10 @@ namespace Voyara.Domain.Entities.Geography
         public static Country Create(string isoCode, string defaultCurrency, string timeZone)
             => new()
             {
-                IsCode = NormalizeLetters(isoCode, 2, nameof(isoCode)),
-                DefaultCurrency = NormalizeLetters(defaultCurrency, 3, nameof(defaultCurrency)),
-                TimeZone = NormalizeTimeZone(timeZone)
+                IsoCode = NormalizeCode(isoCode, 2, nameof(isoCode)),
+                DefaultCurrency = NormalizeCode(defaultCurrency, 3, nameof(defaultCurrency)),
+                TimeZone = NormalizeTimeZone(timeZone),
+                IsActive = true
             };
 
         /// <summary>Changes the default currency and the time zone. The ISO code never changes.</summary>

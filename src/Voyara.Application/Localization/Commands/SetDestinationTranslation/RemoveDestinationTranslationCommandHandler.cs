@@ -1,16 +1,20 @@
-﻿using MediatR;
+using MediatR;
 using Voyara.Application.Abstractions;
 using Voyara.Domain.Repositories.Catalog;
 using Voyara.SharedKernel.Results;
 
 namespace Voyara.Application.Localization.Commands.RemoveDestinationTranslation;
 
+/// <summary>Handles removal of a destination translation.</summary>
 public sealed class RemoveDestinationTranslationCommandHandler
     : IRequestHandler<RemoveDestinationTranslationCommand, Result>
 {
     private readonly IDestinationRepository _destinationRepository;
     private readonly IUnitOfWork _unitOfWork;
 
+    /// <summary>Initializes a new instance of the <see cref="RemoveDestinationTranslationCommandHandler"/> class.</summary>
+    /// <param name="destinationRepository">Repository used to load the destination.</param>
+    /// <param name="unitOfWork">Unit of work used to persist the change.</param>
     public RemoveDestinationTranslationCommandHandler(
         IDestinationRepository destinationRepository,
         IUnitOfWork unitOfWork)
@@ -19,6 +23,7 @@ public sealed class RemoveDestinationTranslationCommandHandler
         _unitOfWork = unitOfWork;
     }
 
+    /// <inheritdoc />
     public async Task<Result> Handle(
         RemoveDestinationTranslationCommand request,
         CancellationToken cancellationToken)

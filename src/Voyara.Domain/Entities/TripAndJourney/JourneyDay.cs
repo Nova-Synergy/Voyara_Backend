@@ -62,11 +62,12 @@ public sealed class JourneyDay : BaseEntity
     /// Adds a scheduled stop item to this day.
     /// </summary>
     /// <param name="destinationId">The destination identifier.</param>
-    /// <param name="cityId">Optional host city identifier.</param>
+    /// <param name="cityId">Optional GUID host city identifier.</param>
     /// <param name="startTime">Optional start time.</param>
     /// <param name="endTime">Optional end time.</param>
     /// <param name="transport">Mode of transportation to the stop.</param>
     /// <returns>The newly created and added <see cref="JourneyItem"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="cityId"/> is an empty GUID.</exception>
     public JourneyItem AddItem(
         Guid destinationId,
         Guid? cityId = null,

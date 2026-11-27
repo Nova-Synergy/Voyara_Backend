@@ -10,24 +10,45 @@ namespace Voyara.Api.Controllers.Catalog;
 [Route("api/v1/[controller]")]
 public sealed class DestinationsController : BaseApiController
 {
-    /// <summary>Searches destinations with paging.</summary>
+    /// <summary>Searches published destinations by free text, location, category, rating and price, with sorting and paging.</summary>
+    /// <param name="request">Search parameters taken from the query string.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet]
     public async Task<IActionResult> Search(
-        [FromQuery] string? searchTerm,
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10,
-        CancellationToken cancellationToken = default)
-        => HandleResult(await Sender.Send(new SearchDestinationsQuery(searchTerm, page, pageSize), cancellationToken));
+        [FromQuery] SearchDestinationsRequest request,
+        CancellationToken cancellationToken)
+        => HandleResult(await Sender.Send(
+            new SearchDestinationsQuery(
+                request.SearchTerm,
+                request.Lang,
+                request.CountryId,
+                request.CityId,
+                request.CategoryId,
+                request.MinRating,
+                request.MaxPrice,
+                request.Currency,
+                request.SortBy,
+                request.SortDirection,
+                request.Page,
+                request.PageSize),
+            cancellationToken));
 
-    /// <summary>Gets a single destination by identifier.</summary>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(new GetDestinationByIdQuery(id), cancellationToken));
 
     /// <summary>Creates a new destination in Draft status.</summary>
+    /// <param name="request">Destination details, including existing city and category identifiers.</param>
+    /// <param name="cancellationToken">Token used to cancel the request.</param>
     [HttpPost]
     public async Task<IActionResult> Create(CreateDestinationRequest request, CancellationToken cancellationToken)
         => HandleResult(await Sender.Send(
-            new CreateDestinationCommand(request.Name, request.Description, request.Latitude, request.Longitude),
+            new CreateDestinationCommand(
+                request.Name,
+                request.Description,
+                request.Latitude,
+                request.Longitude,
+                request.CityId,
+                request.CategoryId),
             cancellationToken));
 }

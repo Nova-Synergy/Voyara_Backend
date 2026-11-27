@@ -55,7 +55,7 @@ namespace Voyara.Domain.Entities.Catalog
         /// <summary>
         /// Gets the identifier of the city the destination is located in.
         /// </summary>
-        public int CityId { get; private set; }
+        public Guid CityId { get; private set; }
 
         /// <summary>
         /// Gets the city the destination is located in.
@@ -106,7 +106,7 @@ namespace Voyara.Domain.Entities.Catalog
         /// so the "at least one translation" rule holds from the start.
         /// </summary>
         /// <param name="location">Geographic location.</param>
-        /// <param name="cityId">Identifier of the city the destination is in.</param>
+        /// <param name="cityId">GUID identifier of the city the destination is in.</param>
         /// <param name="categoryId">Identifier of the category.</param>
         /// <param name="estimatedVisitMinutes">Typical visit time, 1 to 1440 minutes.</param>
         /// <param name="languageCode">Language of the first translation.</param>
@@ -117,7 +117,7 @@ namespace Voyara.Domain.Entities.Catalog
         /// <exception cref="ArgumentException">An argument is missing or out of range.</exception>
         public static Destination Create(
             GeoPoint location,
-            int cityId,
+            Guid cityId,
             Guid categoryId,
             int estimatedVisitMinutes,
             string languageCode,
@@ -144,10 +144,22 @@ namespace Voyara.Domain.Entities.Catalog
         }
 
         /// <summary>
-        /// Convenience factory method to construct a draft destination from name, description, and location.
+        /// Convenience factory method to construct a draft destination with existing city and category relationships.
         /// </summary>
-        public static Destination Create(string name, string? description, GeoPoint location)
-            => Create(location, Guid.NewGuid(), Guid.NewGuid(), 60, "en", name, description, null);
+        /// <param name="name">Localized destination name.</param>
+        /// <param name="description">Optional localized description.</param>
+        /// <param name="location">Geographic location.</param>
+        /// <param name="cityId">GUID identifier of an existing city.</param>
+        /// <param name="categoryId">Identifier of an existing category.</param>
+        /// <returns>The created <see cref="Destination"/> instance.</returns>
+        /// <exception cref="ArgumentException">A relationship identifier is invalid.</exception>
+        public static Destination Create(
+            string name,
+            string? description,
+            GeoPoint location,
+            Guid cityId,
+            Guid categoryId)
+            => Create(location, cityId, categoryId, 60, "en", name, description, null);
 
         // ------------------------------------------------------------------ lifecycle
 
@@ -187,7 +199,7 @@ namespace Voyara.Domain.Entities.Catalog
         }
 
         /// <summary>Places the destination in another city.</summary>
-        public void MoveToCity(int cityId)
+        public void MoveToCity(Guid cityId)
         {
             EnsureEditable();
             EnsureCityId(cityId);
@@ -424,9 +436,9 @@ namespace Voyara.Domain.Entities.Catalog
                 throw new InvalidOperationException("An archived destination cannot be modified.");
         }
 
-        private static void EnsureCityId(int cityId)
+        private static void EnsureCityId(Guid cityId)
         {
-            if (cityId <= 0)
+            if (cityId == Guid.Empty)
                 throw new ArgumentException("Identifier is required.", nameof(cityId));
         }
 

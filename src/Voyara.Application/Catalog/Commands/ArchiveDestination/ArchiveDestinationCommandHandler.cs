@@ -12,7 +12,9 @@ public sealed class ArchiveDestinationCommandHandler : IRequestHandler<ArchiveDe
     private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>Creates the handler.</summary>
-    public ArchiveDestinationCommandHandler(IDestinationRepository destinationRepository, IUnitOfWork unitOfWork)
+    public ArchiveDestinationCommandHandler(
+        IDestinationRepository destinationRepository,
+        IUnitOfWork unitOfWork)
     {
         _destinationRepository = destinationRepository;
         _unitOfWork = unitOfWork;
@@ -30,6 +32,8 @@ public sealed class ArchiveDestinationCommandHandler : IRequestHandler<ArchiveDe
 
         destination.Archive();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // The destination appears in or disappears from public search results.
 
         return Result.Success();
     }

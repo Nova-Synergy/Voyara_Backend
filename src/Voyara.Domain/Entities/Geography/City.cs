@@ -1,18 +1,14 @@
-﻿using Voyara.SharedKernel.Entities;
+using Voyara.SharedKernel.Entities;
 
 namespace Voyara.Domain.Entities.Geography
 {
     /// <summary>
     /// Represents a city inside a country; destinations are located in cities.
     /// It is created and changed only through its <see cref="Country"/>.
+    /// Its identity is the GUID inherited from <see cref="AuditableEntity"/>.
     /// </summary>
     public sealed class City : AuditableEntity
     {
-        /// <summary>
-        /// Gets the database-generated identifier (hides the Guid Id of the base class).
-        /// </summary>
-        public new int Id { get; private set; }
-
         /// <summary>
         /// Gets the latitude of the city center in degrees.
         /// </summary>
@@ -31,7 +27,7 @@ namespace Voyara.Domain.Entities.Geography
         /// <summary>
         /// Gets the identifier of the owning country.
         /// </summary>
-        public int CountryId { get; private set; }
+        public Guid CountryId { get; private set; }
 
         /// <summary>
         /// Gets the country that owns this city.

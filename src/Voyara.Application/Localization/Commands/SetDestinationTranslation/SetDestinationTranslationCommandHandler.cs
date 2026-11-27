@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Voyara.Application.Abstractions;
 using Voyara.Domain.Repositories.Catalog;
 using Voyara.Domain.Repositories.Localization;
@@ -6,6 +6,7 @@ using Voyara.SharedKernel.Results;
 
 namespace Voyara.Application.Localization.Commands.SetDestinationTranslation;
 
+/// <summary>Creates or updates a destination translation and persists it through the unit of work.</summary>
 public sealed class SetDestinationTranslationCommandHandler
     : IRequestHandler<SetDestinationTranslationCommand, Result>
 {
@@ -13,6 +14,10 @@ public sealed class SetDestinationTranslationCommandHandler
     private readonly ILanguageRepository _languageRepository;
     private readonly IUnitOfWork _unitOfWork;
 
+    /// <summary>Initializes the handler.</summary>
+    /// <param name="destinationRepository">Repository used to load the destination.</param>
+    /// <param name="languageRepository">Repository used to verify the language.</param>
+    /// <param name="unitOfWork">Unit of work used to persist the translation and invalidate search cache.</param>
     public SetDestinationTranslationCommandHandler(
         IDestinationRepository destinationRepository,
         ILanguageRepository languageRepository,
@@ -23,6 +28,7 @@ public sealed class SetDestinationTranslationCommandHandler
         _unitOfWork = unitOfWork;
     }
 
+    /// <inheritdoc />
     public async Task<Result> Handle(
         SetDestinationTranslationCommand request,
         CancellationToken cancellationToken)
@@ -56,6 +62,8 @@ public sealed class SetDestinationTranslationCommandHandler
             request.CultureNotes);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Translated names and descriptions are what the search matches and displays.
 
         return Result.Success();
     }

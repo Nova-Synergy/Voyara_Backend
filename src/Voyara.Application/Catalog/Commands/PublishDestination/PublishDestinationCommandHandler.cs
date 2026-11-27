@@ -12,7 +12,9 @@ public sealed class PublishDestinationCommandHandler : IRequestHandler<PublishDe
     private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>Creates the handler.</summary>
-    public PublishDestinationCommandHandler(IDestinationRepository destinationRepository, IUnitOfWork unitOfWork)
+    public PublishDestinationCommandHandler(
+        IDestinationRepository destinationRepository,
+        IUnitOfWork unitOfWork)
     {
         _destinationRepository = destinationRepository;
         _unitOfWork = unitOfWork;
@@ -30,6 +32,8 @@ public sealed class PublishDestinationCommandHandler : IRequestHandler<PublishDe
 
         destination.Publish();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // The destination appears in or disappears from public search results.
 
         return Result.Success();
     }

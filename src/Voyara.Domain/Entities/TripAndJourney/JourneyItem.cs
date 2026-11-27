@@ -35,7 +35,7 @@ public sealed class JourneyItem : BaseEntity
     /// <summary>
     /// Gets the identifier of the city where this stop occurs, if applicable.
     /// </summary>
-    /// <value>The optional foreign key pointing to the <see cref="City"/>.</value>
+    /// <value>The optional GUID foreign key pointing to the <see cref="City"/>.</value>
     public Guid? CityId { get; private set; }
 
     /// <summary>
@@ -102,12 +102,13 @@ public sealed class JourneyItem : BaseEntity
     /// </summary>
     /// <param name="journeyDayId">The parent journey day identifier.</param>
     /// <param name="destinationId">The catalog destination identifier.</param>
-    /// <param name="cityId">The optional city identifier.</param>
+    /// <param name="cityId">The optional GUID identifier of the associated city.</param>
     /// <param name="sortOrder">Sequence order within the day.</param>
     /// <param name="startTime">Optional scheduled arrival or start time.</param>
     /// <param name="endTime">Optional scheduled departure or finish time.</param>
     /// <param name="transport">Mode of transportation to or during the visit.</param>
     /// <returns>A new <see cref="JourneyItem"/> instance.</returns>
+    /// <exception cref="ArgumentException">The optional city identifier is an empty GUID.</exception>
     public static JourneyItem Create(
         Guid journeyDayId,
         Guid destinationId,
@@ -117,6 +118,11 @@ public sealed class JourneyItem : BaseEntity
         TimeSpan? endTime = null,
         TransportMode transport = TransportMode.Walking)
     {
+        if (cityId == Guid.Empty)
+        {
+            throw new ArgumentException("City identifier cannot be an empty GUID.", nameof(cityId));
+        }
+
         return new JourneyItem(
             journeyDayId,
             destinationId,
