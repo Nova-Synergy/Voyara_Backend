@@ -41,4 +41,28 @@ public sealed class JourneyRepository : IJourneyRepository
     {
         return _context.Set<Journey>().AnyAsync(j => j.Id == id, cancellationToken);
     }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Journey>> GetRecommendedCandidatesAsync(
+        int? totalDays,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Set<Journey>()
+            .Include(j => j.Days)
+                .ThenInclude(d => d.Items)
+            .AsSplitQuery()
+            .AsQueryable();
+
+        if (totalDays.HasValue && totalDays.Value > 0)
+        {
+            query = query.Where(j => j.TotalDays == totalDays.Value);
+        }
+
+        return await query
+            .OrderByDescending(j => j.GeneratedByAI)
+            .ThenByDescending(j => j.TotalDays)
+            .Take(take)
+            .ToListAsync(cancellationToken);
+    }
 }

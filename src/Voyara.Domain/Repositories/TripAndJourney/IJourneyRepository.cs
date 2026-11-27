@@ -28,4 +28,13 @@ public interface IJourneyRepository
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><see langword="true"/> if the journey exists; otherwise, <see langword="false"/>.</returns>
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves candidate journeys for recommendation matching, optionally filtered by planned duration.
+    /// </summary>
+    /// <param name="totalDays">Optional planned total days filter.</param>
+    /// <param name="take">Maximum number of candidate journeys to retrieve.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A read-only collection of candidate journey aggregate roots.</returns>
+    Task<IReadOnlyList<Journey>> GetRecommendedCandidatesAsync(int? totalDays, int take, CancellationToken cancellationToken = default);
 }
