@@ -28,6 +28,11 @@ using Voyara.Infrastructure.Persistence.Repositories.Localization;
 
 using Voyara.Domain.Repositories.TripAndJourney;
 using Voyara.Infrastructure.Persistence.Repositories.TripAndJourney;
+using Voyara.Domain.Repositories.Moderation;
+using Voyara.Infrastructure.Persistence.Repositories.Moderation;
+using Voyara.Domain.Repositories.Guides;
+using Voyara.Infrastructure.Persistence.Repository.Guides;
+using Voyara.Application.Guides;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -99,6 +104,10 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+        services.AddScoped<IGuideProfileRepository, GuideProfileRepository>();
+        services.AddScoped<IGuideReadRepository, GuideReadRepository>();
+        services.AddScoped<IGuideRoleGranter, GuideRoleGranter>();
 
         return services;
     }
