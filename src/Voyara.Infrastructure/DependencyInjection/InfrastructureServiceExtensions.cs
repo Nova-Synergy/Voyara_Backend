@@ -5,9 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using Voyara.Application.Abstractions;
+using Voyara.Application.Guides;
 using Voyara.Domain.Repositories.Catalog;
-using Voyara.Domain.Repositories.Transportation;
 using Voyara.Domain.Repositories.Culture_Rules;
+using Voyara.Domain.Repositories.Guides;
+using Voyara.Domain.Repositories.Localization;
+using Voyara.Domain.Repositories.Moderation;
+using Voyara.Domain.Repositories.Transportation;
+using Voyara.Domain.Repositories.TripAndJourney;
 using Voyara.Infrastructure.Ai;
 using Voyara.Infrastructure.Caching;
 using Voyara.Infrastructure.Currency;
@@ -18,16 +23,14 @@ using Voyara.Infrastructure.Persistence;
 using Voyara.Infrastructure.Persistence.Interceptors;
 using Voyara.Infrastructure.Persistence.Outbox;
 using Voyara.Infrastructure.Persistence.Repositories.Catalog;
-using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.Culture_Rules;
-using Voyara.Infrastructure.Recommendations;
-using Voyara.Domain.Repositories.Transportation;
-using Voyara.Infrastructure.Persistence.Repositories.Transportation;
-using Voyara.Domain.Repositories.Localization;
+using Voyara.Infrastructure.Persistence.Repositories.Guides;
 using Voyara.Infrastructure.Persistence.Repositories.Localization;
-
-using Voyara.Domain.Repositories.TripAndJourney;
+using Voyara.Infrastructure.Persistence.Repositories.Moderation;
+using Voyara.Infrastructure.Persistence.Repositories.Transportation;
 using Voyara.Infrastructure.Persistence.Repositories.TripAndJourney;
+using Voyara.Infrastructure.Persistence.Repository.Guides;
+using Voyara.Infrastructure.Recommendations;
 
 namespace Voyara.Infrastructure.DependencyInjection;
 
@@ -100,6 +103,12 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
+        services.AddScoped<IGuideProfileRepository, GuideProfileRepository>();
+        services.AddScoped<IGuideRequestRepository, GuideRequestRepository>();
+        services.AddScoped<IGuideRequestReadRepository, GuideRequestReadRepository>();
+        services.AddScoped<IGuideReadRepository, GuideReadRepository>();
+        services.AddScoped<IGuideRoleGranter, GuideRoleGranter>();
+\
         return services;
     }
 }
