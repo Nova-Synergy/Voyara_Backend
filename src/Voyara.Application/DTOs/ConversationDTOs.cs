@@ -143,3 +143,35 @@ public sealed record UpdateRequirementsRequest(
     string BudgetCurrency,
     string? TravelStyle,
     string? TransportPreference);
+
+/// <summary>
+/// Lightweight catalog destination summary injected into AI assistant context.
+/// </summary>
+/// <param name="DestinationId">Destination identifier.</param>
+/// <param name="Name">Localized destination name.</param>
+/// <param name="Description">Localized destination description.</param>
+/// <param name="Rating">Average visitor rating (0..5).</param>
+/// <param name="ReviewCount">Total review count.</param>
+/// <param name="EstimatedVisitMinutes">Typical visit duration in minutes.</param>
+public sealed record CatalogContextDestinationDto(
+    Guid DestinationId,
+    string Name,
+    string? Description,
+    double Rating,
+    int ReviewCount,
+    int EstimatedVisitMinutes);
+
+/// <summary>
+/// Assembled AI planning context combining conversation state, extracted requirements, and catalog destinations.
+/// </summary>
+/// <param name="ConversationId">Conversation identifier.</param>
+/// <param name="Language">Conversation language code.</param>
+/// <param name="State">Current conversation workflow state.</param>
+/// <param name="Requirements">Captured trip requirements, if any.</param>
+/// <param name="CatalogDestinations">Relevant published catalog destinations.</param>
+public sealed record AiConversationContextDto(
+    Guid ConversationId,
+    string Language,
+    string State,
+    TripRequirementsDto? Requirements,
+    IReadOnlyList<CatalogContextDestinationDto> CatalogDestinations);

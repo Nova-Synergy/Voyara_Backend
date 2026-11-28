@@ -24,6 +24,20 @@ public interface IConversationRepository
     Task<IReadOnlyList<Conversation>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves a page of conversation sessions belonging to a specific user, ordered by newest first.
+    /// </summary>
+    Task<IReadOnlyList<Conversation>> GetPagedByUserIdAsync(
+        Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Counts all conversation sessions belonging to a specific user.
+    /// </summary>
+    Task<int> CountByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Adds a new conversation session to persistence.
     /// </summary>
     /// <param name="conversation">The conversation aggregate to insert.</param>

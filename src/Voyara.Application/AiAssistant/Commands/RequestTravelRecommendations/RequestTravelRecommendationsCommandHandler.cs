@@ -1,6 +1,7 @@
 using System.Text;
 using MediatR;
 using Voyara.Application.Abstractions;
+using Voyara.Application.AiAssistant.Services;
 using Voyara.Application.DTOs;
 using Voyara.Domain.Entities.Catalog;
 using Voyara.Domain.Enums;
@@ -59,6 +60,18 @@ public sealed class RequestTravelRecommendationsCommandHandler
                 Error.Unauthorized("Conversation.Forbidden", "You do not have permission to access this conversation."));
         }
 
+        if (conversation.State == ConversationState.Archived)
+        {
+            return Result.Failure<ConversationalRecommendationResponse>(
+                Error.Conflict("Conversation.Archived", "Cannot request recommendations in an archived conversation session."));
+        }
+
+        if (conversation.State == ConversationState.Completed)
+        {
+            return Result.Failure<ConversationalRecommendationResponse>(
+                Error.Conflict("Conversation.Completed", "Cannot request recommendations in a completed conversation session."));
+        }
+
         var limit = Math.Clamp(request.Limit, 1, 10);
         var collected = new List<Destination>();
         var seenIds = new HashSet<Guid>();
@@ -76,7 +89,9 @@ public sealed class RequestTravelRecommendationsCommandHandler
                 if (seenIds.Add(id))
                 {
                     var dest = await _destinationRepository.GetByIdAsync(id, cancellationToken);
-                    if (dest is not null && MatchesFilter(dest, request.CityId, request.CategoryId))
+                    if (dest is not null
+                        && dest.Status == DestinationStatus.Published
+                        && MatchesFilter(dest, request.CityId, request.CategoryId))
                     {
                         collected.Add(dest);
                     }
@@ -107,7 +122,7 @@ public sealed class RequestTravelRecommendationsCommandHandler
         // 3. Format structured recommendations
         var recommendedItems = collected.Select(d =>
         {
-            var translation = d.GetTranslation();
+            var translation = d.GetTranslation(conversation.Language);
             var coverImage = d.Images.FirstOrDefault(i => i.IsCover)?.Url ?? d.Images.FirstOrDefault()?.Url;
             var reason = d.ReviewCount > 0
                 ? $"Top-rated destination with {d.AverageRating:F1}★ from {d.ReviewCount} reviews"
@@ -134,6 +149,11 @@ public sealed class RequestTravelRecommendationsCommandHandler
             : "You are the Voyara AI Travel Assistant. Provide a friendly, inspiring, and concise recommendation pitch introducing the suggested destinations.";
 
         promptBuilder.AppendLine($"[System: {systemInstruction}]");
+        if (conversation.Requirements is not null)
+        {
+            var req = conversation.Requirements;
+            promptBuilder.AppendLine($"Trip Requirements: Country={req.Country}, Days={req.DurationDays}, Budget={req.BudgetAmount} {req.BudgetCurrency}, Interests={string.Join(", ", req.Interests)}");
+        }
         promptBuilder.AppendLine($"User Inquiry: \"{userInquiry}\"");
         promptBuilder.AppendLine();
         promptBuilder.AppendLine("Verified Catalog Recommendations:");
@@ -147,11 +167,20 @@ public sealed class RequestTravelRecommendationsCommandHandler
         promptBuilder.AppendLine("Please present these recommendations enthusiastically to the traveler, explaining why each is worth visiting.");
         promptBuilder.Append("Assistant: ");
 
-        var aiPitch = await _aiProvider.GetCompletionAsync(promptBuilder.ToString(), cancellationToken);
+        var completionResult = await AiResponseHelper.ExecuteCompletionAsync(
+            _aiProvider,
+            promptBuilder.ToString(),
+            cancellationToken);
+        if (completionResult.IsFailure)
+        {
+            return Result.Failure<ConversationalRecommendationResponse>(completionResult.Error);
+        }
+
+        var (aiPitch, tokensUsed) = completionResult.Value;
 
         // 5. Record conversational turns
         conversation.AddMessage(MessageRole.User, userInquiry);
-        conversation.AddMessage(MessageRole.Assistant, aiPitch);
+        conversation.AddMessage(MessageRole.Assistant, aiPitch, tokensUsed);
 
         _conversationRepository.Update(conversation);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -46,7 +46,7 @@ public static class InfrastructureServiceExtensions
         services.AddDbContext<VoyaraDbContext>((sp, options) =>
         {
             var databaseOptions = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<DatabaseOptions>>().Value;
-            options.UseNpgsql(databaseOptions.ConnectionString, npgsql => npgsql.UseNetTopologySuite())
+            options.UseSqlServer(databaseOptions.ConnectionString, sql => sql.UseNetTopologySuite())
                 .AddInterceptors(sp.GetServices<SaveChangesInterceptor>().ToArray());
         });
 

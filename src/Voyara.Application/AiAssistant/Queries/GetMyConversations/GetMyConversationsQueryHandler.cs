@@ -6,10 +6,10 @@ using Voyara.SharedKernel.Results;
 namespace Voyara.Application.AiAssistant.Queries.GetMyConversations;
 
 /// <summary>
-/// Handles listing all conversation sessions belonging to the calling user.
+/// Handles listing conversation sessions belonging to the calling user with pagination.
 /// </summary>
 public sealed class GetMyConversationsQueryHandler
-    : IRequestHandler<GetMyConversationsQuery, Result<IReadOnlyList<ConversationSummaryResponse>>>
+    : IRequestHandler<GetMyConversationsQuery, Result<PagedResult<ConversationSummaryResponse>>>
 {
     private readonly IConversationRepository _conversationRepository;
     private readonly ICurrentUser _currentUser;
@@ -26,18 +26,24 @@ public sealed class GetMyConversationsQueryHandler
     }
 
     /// <inheritdoc />
-    public async Task<Result<IReadOnlyList<ConversationSummaryResponse>>> Handle(
+    public async Task<Result<PagedResult<ConversationSummaryResponse>>> Handle(
         GetMyConversationsQuery request,
         CancellationToken cancellationToken)
     {
         var userId = _currentUser.UserId ?? Guid.Empty;
         if (userId == Guid.Empty)
         {
-            return Result.Failure<IReadOnlyList<ConversationSummaryResponse>>(
+            return Result.Failure<PagedResult<ConversationSummaryResponse>>(
                 Error.Unauthorized("User.Unauthorized", "User must be authenticated to view conversations."));
         }
 
-        var conversations = await _conversationRepository.GetByUserIdAsync(userId, cancellationToken);
+        var page = Math.Max(1, request.Page);
+        var pageSize = Math.Clamp(request.PageSize, 1, 100);
+        var skip = (page - 1) * pageSize;
+
+        var conversations = await _conversationRepository.GetPagedByUserIdAsync(
+            userId, skip, pageSize, cancellationToken);
+        var totalCount = await _conversationRepository.CountByUserIdAsync(userId, cancellationToken);
 
         var summaries = conversations.Select(c => new ConversationSummaryResponse(
             c.Id,
@@ -47,6 +53,6 @@ public sealed class GetMyConversationsQueryHandler
             c.Messages.Count,
             c.JourneyId)).ToList();
 
-        return summaries;
+        return new PagedResult<ConversationSummaryResponse>(summaries, totalCount, page, pageSize);
     }
 }

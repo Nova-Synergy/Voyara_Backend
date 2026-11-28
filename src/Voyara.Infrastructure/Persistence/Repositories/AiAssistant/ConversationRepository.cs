@@ -39,6 +39,31 @@ public sealed class ConversationRepository : IConversationRepository
     }
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<Conversation>> GetPagedByUserIdAsync(
+        Guid userId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<Conversation>()
+            .AsNoTracking()
+            .Include(c => c.Messages)
+            .Where(c => c.UserId == userId)
+            .OrderByDescending(c => c.StartedAt)
+            .Skip(Math.Max(0, skip))
+            .Take(Math.Max(1, take))
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<int> CountByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return _context.Set<Conversation>()
+            .AsNoTracking()
+            .CountAsync(c => c.UserId == userId, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public void Add(Conversation conversation)
     {
         _context.Set<Conversation>().Add(conversation);

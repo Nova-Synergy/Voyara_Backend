@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Voyara.Application.AiAssistant.Commands.ArchiveConversation;
 using Voyara.Application.AiAssistant.Commands.CreateConversation;
+using Voyara.Application.AiAssistant.Commands.RequestTravelRecommendations;
 using Voyara.Application.AiAssistant.Commands.SendMessage;
+using Voyara.Application.AiAssistant.Commands.UpdateRequirements;
 using Voyara.Application.AiAssistant.Queries.GetConversationById;
+using Voyara.Application.AiAssistant.Queries.GetConversationContext;
 using Voyara.Application.AiAssistant.Queries.GetMyConversations;
 using Voyara.Application.DTOs;
 
@@ -28,13 +31,18 @@ public sealed class AssistantController : BaseApiController
             cancellationToken));
 
     /// <summary>
-    /// Retrieves all AI planning conversations for the authenticated tourist.
+    /// Retrieves AI planning conversations for the authenticated tourist with paging.
     /// </summary>
+    /// <param name="page">1-based page number.</param>
+    /// <param name="pageSize">Number of conversations per page.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("conversations")]
-    public async Task<IActionResult> GetMyConversations(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetMyConversations(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
         => HandleResult(await Sender.Send(
-            new GetMyConversationsQuery(),
+            new GetMyConversationsQuery(page, pageSize),
             cancellationToken));
 
     /// <summary>
@@ -48,6 +56,23 @@ public sealed class AssistantController : BaseApiController
         CancellationToken cancellationToken = default)
         => HandleResult(await Sender.Send(
             new GetConversationByIdQuery(id),
+            cancellationToken));
+
+    /// <summary>
+    /// Retrieves the assembled AI planning context and matching catalog destinations for a conversation.
+    /// </summary>
+    /// <param name="id">The conversation identifier.</param>
+    /// <param name="searchHint">Optional keyword to filter catalog destinations.</param>
+    /// <param name="maxDestinations">Maximum number of catalog destinations to include (default: 5).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("conversations/{id:guid}/context")]
+    public async Task<IActionResult> GetConversationContext(
+        Guid id,
+        [FromQuery] string? searchHint = null,
+        [FromQuery] int maxDestinations = 5,
+        CancellationToken cancellationToken = default)
+        => HandleResult(await Sender.Send(
+            new GetConversationContextQuery(id, searchHint, maxDestinations),
             cancellationToken));
 
     /// <summary>

@@ -2,6 +2,7 @@ using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Voyara.Application.AiAssistant.Services;
 using Voyara.Application.Behaviors;
 using Voyara.Application.CostEstimation.Services;
 using Voyara.Application.Planning.Services;
@@ -38,6 +39,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ITransportationCostEstimator, TransportationCostEstimator>();
         services.AddScoped<IAccommodationCostEstimator, AccommodationCostEstimator>();
         services.AddScoped<IActivitiesCostEstimator, ActivitiesCostEstimator>();
+        services.AddScoped<IAiContextService, AiContextService>();
 
         return services;
     }
