@@ -9,6 +9,7 @@ using Voyara.Domain.Entities.Moderation;
 
 using Voyara.Domain.Entities.Geography;
 using Voyara.Domain.Entities.Localization;
+using Voyara.Domain.Entities.AiAssistant;
 
 /// <summary>EF Core context for the platform; module configurations are applied from this assembly.</summary>
 public sealed class VoyaraDbContext : DbContext
@@ -58,6 +59,10 @@ public sealed class VoyaraDbContext : DbContext
 
     /// <summary>Append-only moderation audit records.</summary>
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+
+    public DbSet<Message> Messages => Set<Message>();
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
